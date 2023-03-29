@@ -1,2 +1,2 @@
-# my-ai-code
-Just my AI code
+# Machine Learning Code
+Just my machine learning code
