@@ -3,6 +3,7 @@ PY = python3
 
 F_FLAGS = -ggdb -pedantic -Wall -cpp
 SRC_DIR = src
+EXAMPLE_DIR = examples
 OBJ_DIR = obj
 BIN_DIR = bin
 TEST_DIR = test
@@ -12,12 +13,13 @@ TEST_SRC_DIR = $(addprefix $(TEST_DIR)/, src)
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o)
 BINS = $(addprefix $(BIN_DIR)/, )
 TESTS = $(addprefix $(TEST_BIN_DIR)/, test_mod_perceptron.out)
+EXAMPLES = $(addprefix $(EXAMPLE_DIR)/, example_perceptron.out)
 
 define newline
 
 endef
 
-all: $(OBJ_DIR) $(TEST_BIN_DIR) $(OBJS) $(TESTS)
+all: $(OBJ_DIR) $(TEST_BIN_DIR) $(OBJS) $(TESTS) $(EXAMPLES)
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -43,6 +45,17 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.f90 $(OBJS)
 
 test_%.out: $(TEST_BIN_DIR)/test_%.out
 	valgrind --leak-check=full --show-leak-kinds=all ./$<
+
+# Compile the first exmaple of perceptron
+$(EXAMPLE_DIR)/example_perceptron.out: $(EXAMPLE_DIR)/example_perceptron.f90 $(OBJ_DIR)/mod_perceptron.o
+	cp $(OBJ_DIR)/mod_perceptron.mod $(EXAMPLE_DIR)/ # Copy the module file
+	$(F) $(F_FLAGS) $^ -o $@ -I /usr/include -lassertf
+
+# Execute the example and catch the data
+example_perceptron.out: $(EXAMPLE_DIR)/example_perceptron.out
+	./$< > $(EXAMPLE_DIR)/data_perceptron.txt
+	$(PY) $(EXAMPLE_DIR)/perceptron_plot.py $(EXAMPLE_DIR)/data_perceptron.txt
+
 
 # TODO: Create way to execute the examples or binaries
 # run: $(BINS)

@@ -5,3 +5,7 @@ You need to install [assertf](https://github.com/alecksandr26/assert-fortran/blo
 ```
 make
 ```
+# Examples
+## Example perceptron
+A simpel perceptron that have learned the "and logic gate".
+![Alt text](examples/example_perceptron.png)
