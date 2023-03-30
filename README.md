@@ -8,4 +8,5 @@ make
 # Examples
 ## Example perceptron
 An example of the linearly in some logic gates.
+
 ![Alt text](examples/example_perceptron.png)
