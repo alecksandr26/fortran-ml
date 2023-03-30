@@ -7,5 +7,5 @@ make
 ```
 # Examples
 ## Example perceptron
-A simpel perceptron that have learned the "and logic gate".
+A simpel perceptron that have learned some logic gates".
 ![Alt text](examples/example_perceptron.png)
