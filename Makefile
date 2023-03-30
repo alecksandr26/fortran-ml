@@ -21,6 +21,9 @@ EXAMPLES = $(patsubst %.f90, %.out, $(wildcard $(EXAMPLE_DIR)/*/*.f90)) # Fetch 
 # A simple library with all the code
 LIB =  $(addprefix $(LIB_DIR)/, libmcl.a)
 
+DATA_FILE = data.txt
+PYTHON_PLOT_FILE = plot.py
+
 define newline
 
 endef
@@ -67,8 +70,8 @@ $(EXAMPLE_DIR)/%.out: $(EXAMPLE_DIR)/%.f90 $(LIB)
 
 # Execute the example and catch the data
 %.out: $(EXAMPLE_DIR)/*/%.out
-	./$< > $(dir $<)data_perceptron.txt
-	$(PY) $(dir $<)perceptron_plot.py $(dir $<)data_perceptron.txt
+	./$< > $(dir $<)$(DATA_FILE)
+	$(PY) $(dir $<)$(PYTHON_PLOT_FILE) $(dir $<)$(DATA_FILE)
 
 # Clean everything
 clean_$(BIN_DIR)/%.out:

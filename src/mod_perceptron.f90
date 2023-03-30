@@ -14,7 +14,6 @@ module mod_perceptron
         integer(int32) :: n     ! The amount of weights
         real(real32), pointer :: w(:) ! The weights
     end type perceptron
-    
 contains
     
     ! threshold: A simple activation function

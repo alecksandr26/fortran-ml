@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt  # Import the matplotlib
 import numpy as np
 import sys
+from pathlib import Path
 
 
 # main: Execute the main fucntion and catch the data
@@ -45,8 +46,7 @@ def main():
     axis[1, 0].scatter(data['x1'], data['x2'])
     axis[1, 0].plot(x, func_nand(x))
     axis[1, 0].set_title("Nand")
-    
-    plt.savefig('examples/example_perceptron.png')
+    plt.savefig(f"{Path( __file__ ).parent.absolute()}/logic_gates.png")
     plt.show()
 
 if __name__ == "__main__":
