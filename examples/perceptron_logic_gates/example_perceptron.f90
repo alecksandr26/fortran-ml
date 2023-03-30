@@ -6,9 +6,10 @@ program example
     use assertf
 
     type(perceptron) :: per
-    real(real32) :: inputs(4,2), outputs(4), results(4)
+    real(real32) :: inputs(4,2), outputs(4), results(4), weigths(2)
 
-    call p_init(per, 0.8, 0.3, - 0.2)      ! Initialize the perceptron
+    weigths = [0.8, 0.3]
+    call p_init(per, weigths, - 0.2)      ! Initialize the perceptron
 
     inputs = reshape([0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0], [4,2])
     ! inputs = [[0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0]]
@@ -25,8 +26,8 @@ program example
     write(*,*) 'x1:', inputs(:, 1)
     write(*,*) 'x2:', inputs(:, 2)
     write(*,*) 'outputs:', outputs
-    write(*,*) 'and_w1:', per%w1
-    write(*,*) 'and_w2:', per%w2
+    write(*,*) 'and_w1:', per%w(1)
+    write(*,*) 'and_w2:', per%w(2)
     write(*,*) 'and_b:', per%b
     write(*,*) 'and_results:', results
 
@@ -39,8 +40,8 @@ program example
     ! Test the perceptron
     call p_test(per, inputs, results)
 
-    write(*,*) 'or_w1:', per%w1
-    write(*,*) 'or_w2:', per%w2
+    write(*,*) 'or_w1:', per%w(1)
+    write(*,*) 'or_w2:', per%w(2)
     write(*,*) 'or_b:', per%b
     write(*,*) 'or_results:', results
 
@@ -52,9 +53,10 @@ program example
     ! Test the perceptron
     call p_test(per, inputs, results)
 
-    write(*,*) 'nand_w1:', per%w1
-    write(*,*) 'nand_w2:', per%w2
+    write(*,*) 'nand_w1:', per%w(1)
+    write(*,*) 'nand_w2:', per%w(2)
     write(*,*) 'nand_b:', per%b
     write(*,*) 'nand_results:', results
 
+    call p_free(per)
 end program example
