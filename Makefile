@@ -1,6 +1,7 @@
 F = gfortran
 PY = python3
 AR = ar rc
+PDF = pdflatex
 
 F_FLAGS = -ggdb -pedantic -Wall -cpp
 ASSERT_FLAGS = -I /usr/include -lassertf 
@@ -12,14 +13,16 @@ LIB_DIR = lib
 TEST_DIR = test
 TEST_BIN_DIR = $(addprefix $(TEST_DIR)/, bin)
 TEST_SRC_DIR = $(addprefix $(TEST_DIR)/, src)
+DOC_DIR = docs
 
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o)
 BINS = $(addprefix $(BIN_DIR)/, )
 TESTS = $(addprefix $(TEST_BIN_DIR)/, test_mod_perceptron.out)
 EXAMPLES = $(patsubst %.f90, %.out, $(wildcard $(EXAMPLE_DIR)/*/*.f90)) # Fetch The whole directories
+DOCS = $(addprefix $(DOC_DIR)/, perceptron_notes.pdf)
 
 # A simple library with all the code
-LIB =  $(addprefix $(LIB_DIR)/, libmcl.a)
+LIB =  $(addprefix $(LIB_DIR)/, libmlc.a)
 
 DATA_FILE = data.txt
 PYTHON_PLOT_FILE = plot.py
@@ -28,7 +31,7 @@ define newline
 
 endef
 
-all: $(OBJ_DIR) $(TEST_BIN_DIR) $(LIB_DIR) $(OBJS) $(TESTS) $(LIB) $(EXAMPLES)
+all: $(OBJ_DIR) $(TEST_BIN_DIR) $(LIB_DIR) $(OBJS) $(TESTS) $(LIB) $(EXAMPLES) $(DOCS)
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -62,6 +65,10 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.f90 $(LIB)
 test_%.out: $(TEST_BIN_DIR)/test_%.out
 	valgrind --leak-check=full --show-leak-kinds=all ./$<
 
+# Compile the documents
+$(DOC_DIR)/%.pdf: $(DOC_DIR)/%.tex
+	$(PDF) -output-directory $(dir $@) $<
+
 # TODO: Create a sub makefile for each example
 
 $(EXAMPLE_DIR)/%.out: $(EXAMPLE_DIR)/%.f90 $(LIB)
@@ -75,13 +82,13 @@ $(EXAMPLE_DIR)/%.out: $(EXAMPLE_DIR)/%.f90 $(LIB)
 
 # Clean everything
 clean_$(BIN_DIR)/%.out:
-	rm $(BIN_DIR)/$(notdir $@)
+	rm $(patsubst clean_%, %, $@)
 
 clean_$(OBJ_DIR)/%.o:
-	rm $(OBJ_DIR)/$(notdir $@)
+	rm $(patsubst clean_%, %, $@)
 
 clean_$(TEST_BIN_DIR)/%.out:
-	rm $(TEST_BIN_DIR)/$(notdir $@)
+	rm $(patsubst clean_%, %, $@)
 
 clean_$(EXAMPLE_DIR)/%.out:
 	rm $(patsubst clean_%, %, $@)
