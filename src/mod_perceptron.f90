@@ -2,6 +2,7 @@
 
 module mod_perceptron
     use iso_fortran_env, only : real32, int32
+ 
     use assertf
     implicit none
 
