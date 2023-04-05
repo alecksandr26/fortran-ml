@@ -4,8 +4,21 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{listings}
 
+\lstset{language=[90]Fortran,
+  basicstyle=\ttfamily,
+  keywordstyle=\color[HTML]{B22222},
+  commentstyle=\color[HTML]{555555},
+  morecomment=[l]{!\ }% Comment only with space after !
+}
+
+\pgfplotsset{width=10cm,compat=1.9}
 \graphicspath{{./img}}
+\usepgfplotslibrary{external}
 
 \title{Perceptron}
 \author{Erick Alejandro Carrillo López}
@@ -104,17 +117,17 @@ Perceptron model works in two important steps as follows.
 \item In the first step first, multiply all input values with corresponding weight values and then add
   them to determine the weighted sum. Mathematically, we can calculate the weighted sum as follows.\\
   \[
-    \sum_{i = 0}^{n}(weight_i * input_i) = \sum_{i = 0}^{n}(w_i * x_i) = w_0 * x_0 + w_1 * x_1
-    + \cdots + w_n * x_n
+    \sum_{i = 0}^{n}(weight_i \cdot input_i) = \sum_{i = 0}^{n}(w_i \cdot x_i) = w_0 \cdot x_0 + w_1 \cdot x_1
+    + \cdots + w_n \cdot x_n
   \]\\
   Add a special term called bias 'b' to this weighted sum to improve the model's performance.\\
   \[
-    \sum_{i = 0}^{n}(w_i * x_i) + b
+    \sum_{i = 0}^{n}(w_i \cdot x_i) + b
   \]
 \item In the second step, an activation function is applied with the above-mentioned weighted sum,
   which gives us output either in binary form or a continuous value as follows.\\
   \[
-    Y = f(\sum_{i = 0}^{n}(w_i * x_i) + b)
+    y = activation(\sum_{i = 0}^{n}(w_i \cdot x_i) + b) = activation(\vec{w} \cdot \vec{x} + b)
   \]
 \end{enumerate}
 At the end what we are doing here is a simple dot product.
@@ -168,8 +181,9 @@ solution.\\
 \subsubsection{The Mathematical definition behind linear separability:}
 Let $X_0$ and $X_1$ be two sets of points in an n-dimensional Euclidean space. Then $X_0$ and $X_1$
 are linearly separable, if there exist $n + 1$ real numbers $w_1, w_2, \cdots, w_n, k$ such that
-every point $x \in X_0$ satisfies $\sum_{i = 1}^{n}w_i * x_i > k$ and every point $x \in X_1$ satisfies
-$\sum_{i = 0}^{n}w_i * x_i < k$ where $x_i$ is the i-th component of $x$.
+every point $x \in X_0$ satisfies $\sum_{i = 1}^{n}(w_i \cdot x_i) > k$ and every point $x \in X_1$
+satisfies
+$\sum_{i = 0}^{n}(w_i \cdot x_i) < k$ where $x_i$ is the i-th component of $x$.
 \subsection{From the learning algorithm to code:}
 You must create a training function with these characteristics using the previous data.
 \begin{enumerate}
@@ -179,7 +193,7 @@ You must create a training function with these characteristics using the previou
 \end{enumerate}
 Define the activation function which at the end it is a simple binary function.
 \begin{verbatim}
-func activation(x)
+int activation(x)
     return (x > 0) ? 1 : 0
 \end{verbatim}
 Define the learning rate and a number of epochs, which is the amount of times that we are going
@@ -189,22 +203,251 @@ learning_rate = 0.1
 num_epochs = 100
 \end{verbatim}
 Train the perceptron by iterating with all the training data which in this case it is an bidimensinal
-array and very simple just calculate the output and error.
+array and a simple threshold or bias.
 \begin{verbatim}
 for (i = 0, i < num_epochs, i++)
     for (j = 0, j < inputs.length, j++)
         sum = 0.0
         for (k = 0, k < weights.length, k++)
             sum += inputs[j][k] * weights[i]
+        sum += b
         out = activation(sum)
-        error = label[i] - output
 \end{verbatim}
-And at the end we only need to update the weights from the error with the learning rate.
+And at the end we only need to adjust the weights and bias from the error, so the error is so simple
+it is  a subtraction, then use the error and the learning rate to update the weights and bias.
 \begin{verbatim}
+error = label[j] - output
 for (k = 0, k < weights.length, k++)
     weights[k] += learning_rate * error * inputs[j][k]
+b += learning_rate * error
 \end{verbatim}
 \subsection{The math behind the learning algorithm:}
+Maybe now the main question is why we adjust the weights like that.
+\begin{verbatim}
+weights[k] += learning_rate * error * inputs[j][k]
+\end{verbatim}
+And the bias or threshold.
+\begin{verbatim}
+b += learning_rate * error
+\end{verbatim}
+To answer that we need to formulate a math function that represents our neuron which receives a vector
+as input.
+\[
+  f(\vec{x}) = 
+  \begin{cases}
+    1 &\quad if (\vec{w} \cdot \vec{x} - b) > 0  \\
+    0 &\quad \text{otherwise} \\
+  \end{cases}
+\]
+where $\vec{x}$ is the input vector, $\vec{w}$ the coefficients, at the end we are creating a plane.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale = 0.98]{plane.png}
+  \caption{Plane}
+\end{figure}
+
+The range of this function $f(\vec{x})$ is $\{1, 0\}$ so imagine a graph like this, where we try
+some input but we won't get the desired output.
+
+\begin{tikzpicture}
+\begin{axis}[
+scale = 1.2,
+xmin = 0, xmax = 10,
+ymin = 0, ymax = 10,
+axis lines* = left,
+xtick = {0}, ytick = \empty,
+clip = false,
+]
+
+\addplot[color = black, mark = *, only marks, mark size = 3pt] coordinates {(5.0, 5.0)};
+
+\node [above] at (50, 60) {Desired result};
+\node [above] at (50, 50) {$(\vec{x}, y)$};
+
+\addplot[color = black, mark = *, only marks, mark size = 3pt] coordinates {(5.0, 0)};
+\node [above] at (50, 0) {$(\vec{x}, f(\vec{x}))$};p
+\node [above] at (50, 10) {Result obtained};
+
+\node [below] at (50, 0) {$\vec{x}$};
+\node [left] at (0, 50) {$1$};
+% Labels
+\node [right] at (current axis.right of origin) {$\vec{x}$};
+\node [above] at (current axis.above origin) {$y$};
+\end{axis}
+\end{tikzpicture}
+
+Then we can formulate an error function with the input $\vec{v}$, the desired result $y$ and the
+result obtained $f(\vec{x})$.\\
+\[
+  E(\vec{x}) = y - f(\vec{x})
+\]\\
+From this equation we can obtain the desired result.\\
+\[
+  E(\vec{x}) + f(\vec{x}) = y
+\]\\
+Assume that $E(\vec{x}) = \vec{m} \cdot \vec{x} + b$ this is necessary to compute the
+next aproximation of the weights.\\
+\[
+  \vec{m} \cdot \vec{x} + b + \vec{w}_{i} \cdot \vec{x} + b_{i} = y
+\]
+\[
+  (\vec{m} +  \vec{w}_{i})\vec{x} + (b + b_{i}) = y
+\]\\
+So this is how works...
+\[
+  \vec{w}_{i + 1} = \vec{w}_i + \vec{m}
+\]
+\[
+  b_{i + 1} = b_i + b
+\]
+To compute $\vec{m}$ from $E(\vec{x})$.\\
+\[
+  \vec{m} = \frac{E(\vec{x}) - b}{\vec{x}} = (E(\vec{x}) - b) \cdot (\frac{1}{\vec{x}})
+\]\\
+Then from this we can infer the lines of code of how the weights and bias are adjusted, at the
+end what we want is to approximate slowly step by step, for that reason we multiply the error
+with the small learning rate.
+\begin{verbatim}
+learning_rate = 0.1
+\end{verbatim}
+\begin{verbatim}
+error = label[j] - output
+for (k = 0, k < weights.length, k++)
+    weights[k] += learning_rate * error * inputs[j][k]
+b += learning_rate * error
+\end{verbatim}
+\section{Classifying two types of images:}
+\subsection{Perceptron module in fortran:}
+Firstly I made a simple perceptron module in fortran which contains the weights, a bias and with a
+simple step activation function.
+\begin{lstlisting}
+#include <assertf.h>
+
+module mod_perceptron
+    use iso_fortran_env, only : real32, int32
+ 
+    use assertf
+    implicit none
+
+    private
+    public p_init, p_free, p_train, p_test, perceptron
+
+    ! The type where we are going to contain the weights and bieas
+    type perceptron
+        real(real32) ::  b
+        integer(int32) :: n     ! The amount of weights
+        real(real32), pointer :: w(:) ! The weights
+    end type perceptron
+contains
+    
+    ! step: A simple activation function
+    pure function step(output)
+        real(real32), intent(in) :: output
+        real(real32) :: step
+        if (output > 0.0) then
+            step = 1.0
+        else
+            step = 0.0
+        end if
+    end function step
+
+    
+    ! p_init: Receives a perceptron type and adds to it the weights
+    ! and bias
+    subroutine p_init(per, w, b)
+        real(real32), intent(in) :: w(:), b
+        type(perceptron), intent(out) :: per
+
+        per%n = size(w)         ! Fetch the size of the array of weights
+        
+        ! Allocate the array of weights
+        allocate(per%w(per%n))
+        per%w(:) = w(:)
+        per%b = b
+    end subroutine p_init
+
+    ! p_free: To free the perceptrons weights and set the size and bias
+    ! to zero
+    subroutine p_free(per)
+        type(perceptron), intent(in out) :: per
+        
+        deallocate(per%w)
+        per%n = 0
+        per%b = 0
+    end subroutine p_free
+end module mod_perceptron
+\end{lstlisting}
+\subsection{Test and trainning function:}
+Then the \textbf{test} and \textbf{training} functions.
+\begin{lstlisting}
+    ! p_train: To train the perceptron with some data
+    subroutine p_train(per, inputs, outputs, lrate, nepochs)
+        ! inout Because we are going to modify
+        type(perceptron), intent(in out) :: per 
+        ! The inputs and outputs to be trained
+        real(real32), intent(in) :: inputs(:,:) ! Bindimensional array
+        real(real32), intent(in) :: outputs(:), lrate ! Learning rate
+        integer(int32), intent(in) :: nepochs        ! Num of epochs
+
+        ! The size and the iterators
+        integer(int32) :: n, i, j, k
+        real(real32) :: output, error, delta
+        ! Catch the amount of inputs, sizeof(inputs[1])
+        n = size(inputs, 1)     
+        
+        do i = 1, nepochs            ! Start iterating
+            do j = 1, n ! Concurrent iteration
+                ! Computing the perceptron calculation
+                output = per%b
+                do concurrent(k = 1 : per%n)
+                    output = output + per%w(k) * inputs(j, k)
+                end do
+                
+                ! The step function
+                output = step(output)
+
+                ! Compute the error 
+                error = outputs(j) - output
+                delta = lrate * error
+
+                ! Update the perceptron
+                per%b = per%b + delta
+                do concurrent(k = 1 : per%n)
+                    per%w(k) = per%w(k) + delta * inputs(j, k)
+                end do
+            end do
+        end do
+    end subroutine p_train
+
+    ! p_test: To test the perceptron with some inputs
+    subroutine p_test(per, inputs, results)
+        type(perceptron), intent(in) :: per
+        real(real32), intent(in) :: inputs(:, :)
+        real(real32), intent(out) :: results(:)
+
+        ! The size and outputs
+        integer(int32) :: n, i, j
+        
+        ! Test the perceptron
+        n = size(inputs, 1)
+        do concurrent(i = 1 : n)
+            results(i) = per%b
+            do concurrent(j = 1 : per%n)
+                results(i) = results(i) + per%w(j) * inputs(i, j)
+            end do
+            results(i) = step(results(i))
+        end do
+    end subroutine p_test
+\end{lstlisting}
+\subsection{Main program:}
+
+\section{Conclusion:}
+Perceptrons are limited to linearly separable problems, which means that they can only learn to
+classify data that can be separated by a hyperplane. However, they have been used as building blocks
+for more
+complex neural network architectures that can handle more complex problems.\\
+Overall, perceptrons are a simple and powerful tool for building basic binary classifiers, and
+they have contributed significantly to the development of artificial intelligence and machine learning.
 
 
 \section{References:}

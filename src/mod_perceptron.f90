@@ -17,16 +17,16 @@ module mod_perceptron
     end type perceptron
 contains
     
-    ! threshold: A simple activation function
-    pure function threshold(output)
+    ! step: A simple activation function
+    pure function step(output)
         real(real32), intent(in) :: output
-        real(real32) :: threshold
+        real(real32) :: step
         if (output > 0.0) then
-            threshold = 1.0
+            step = 1.0
         else
-            threshold = 0.0
+            step = 0.0
         end if
-    end function threshold
+    end function step
     
     ! p_init: Receives a perceptron type and adds to it the weights and bias
     subroutine p_init(per, w, b)
@@ -72,8 +72,8 @@ contains
                     output = output + per%w(k) * inputs(j, k)
                 end do
                 
-                ! The threshold function
-                output = threshold(output)
+                ! The step function
+                output = step(output)
 
                 ! Compute the error 
                 error = outputs(j) - output
@@ -104,7 +104,7 @@ contains
             do concurrent(j = 1 : per%n)
                 results(i) = results(i) + per%w(j) * inputs(i, j)
             end do
-            results(i) = threshold(results(i))
+            results(i) = step(results(i))
         end do
     end subroutine p_test
 end module mod_perceptron
