@@ -316,7 +316,9 @@ for (k = 0, k < weights.length, k++)
     weights[k] += learning_rate * error * inputs[j][k]
 b += learning_rate * error
 \end{verbatim}
-\section{Classifying two types of images:}
+\section{Example:}
+This is an example of how we can use the perceptron as a binary classifier, what I'm going to do
+is to create a program which identifies when is a circle and when is a rectangle.
 \subsection{Perceptron module in fortran:}
 Firstly I made a simple perceptron module in fortran which contains the weights, a bias and with a
 simple step activation function.

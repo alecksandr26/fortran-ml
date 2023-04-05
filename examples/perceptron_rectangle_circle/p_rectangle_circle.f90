@@ -1,5 +1,7 @@
 #include <assertf.h>
 
+#define WIDTH 20
+#define HEIGHT 20
 
 ! TODO: Find data for circles and rectangles
 
@@ -10,6 +12,6 @@ program p_rectangle_circle
     
     implicit none
     
-    
+
     
 end program p_rectangle_circle
