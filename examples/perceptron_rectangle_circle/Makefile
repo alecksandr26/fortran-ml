@@ -28,7 +28,7 @@ run:    $(DATA_DIR)
 	./$(BIN)
 
 clean:
-	rm -f -r $(LIB) $(OBJS) $(BIN) $(wildcard $(OBJ_DIR)/*.mod) $(wildcard *.ppm) mod_perceptron.mod
+	rm -f -r $(LIB) $(OBJS) $(BIN) $(wildcard $(OBJ_DIR)/*.mod) $(wildcard $(DATA_DIR)/*.ppm) mod_perceptron.mod
 	rm -f -r $(OBJ_DIR) $(DATA_DIR)
 
 
