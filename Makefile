@@ -4,7 +4,8 @@ AR = ar rc
 PDF = pdflatex
 
 F_FLAGS = -ggdb -pedantic -Wall -cpp
-ASSERT_FLAGS = -I /usr/include -lassertf 
+ASSERT_FLAGS = -I /usr/include -lassertf
+
 SRC_DIR = src
 EXAMPLE_DIR = examples
 OBJ_DIR = obj
@@ -18,14 +19,11 @@ DOC_DIR = docs
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o)
 BINS = $(addprefix $(BIN_DIR)/, )
 TESTS = $(addprefix $(TEST_BIN_DIR)/, test_mod_perceptron.out)
-EXAMPLES = $(patsubst %.f90, %.out, $(wildcard $(EXAMPLE_DIR)/*/*.f90)) # Fetch The whole directories
+EXAMPLES = $(patsubst $(EXAMPLE_DIR)/%/Makefile, $(EXAMPLE_DIR)/%/main.out, $(wildcard $(EXAMPLE_DIR)/*/Makefile)) # Fetch The whole directories
 DOCS = $(addprefix $(DOC_DIR)/, perceptron_notes.pdf)
 
 # A simple library with all the code
 LIB =  $(addprefix $(LIB_DIR)/, libmlc.a)
-
-DATA_FILE = data.txt
-PYTHON_PLOT_FILE = plot.py
 
 define newline
 
@@ -46,11 +44,11 @@ $(LIB_DIR):
 	mkdir -p $@
 
 # The objects 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 $(OBJ_DIR) 
 	$(F) $(F_FLAGS) -c $< -J $(OBJ_DIR)/ -o $@ $(ASSERT_FLAGS)
 
 # Create the lib with all the objects
-$(LIB): $(OBJS)
+$(LIB): $(OBJS) $(LIB_DIR)
 	$(AR) $@ $<
 
 # Compiling for the module of assert
@@ -69,16 +67,16 @@ test_%.out: $(TEST_BIN_DIR)/test_%.out
 $(DOC_DIR)/%.pdf: $(DOC_DIR)/%.tex
 	$(PDF) -output-directory $(dir $@) $<
 
-# TODO: Create a sub makefile for each example
+# Execute the sub makefile
 
-$(EXAMPLE_DIR)/%.out: $(EXAMPLE_DIR)/%.f90 $(LIB)
+$(EXAMPLE_DIR)/%/main.out: $(EXAMPLE_DIR)/%/Makefile $(LIB)
 	cp $(OBJ_DIR)/*.mod $(dir $<)
-	$(F) $(F_FLAGS) $^ -o $@ $(ASSERT_FLAGS)
+	cp $(LIB) $(dir $<)
+	cd $(dir $<) && make
 
 # Execute the example and catch the data
-%.out: $(EXAMPLE_DIR)/*/%.out
-	./$< > $(dir $<)$(DATA_FILE)
-	$(PY) $(dir $<)$(PYTHON_PLOT_FILE) $(dir $<)$(DATA_FILE)
+%.out: $(EXAMPLE_DIR)/%/main.out
+	cd $(dir $<) && make run
 
 # Clean everything
 clean_$(BIN_DIR)/%.out:
@@ -91,7 +89,7 @@ clean_$(TEST_BIN_DIR)/%.out:
 	rm $(patsubst clean_%, %, $@)
 
 clean_$(EXAMPLE_DIR)/%.out:
-	rm $(patsubst clean_%, %, $@)
+	cd $(dir $(patsubst clean_%, %, $@)) && make clean
 
 clean: $(addprefix clean_, $(wildcard $(BIN_DIR)/*.out)) \
 	   $(addprefix clean_, $(wildcard $(OBJ_DIR)/*.o)) \
