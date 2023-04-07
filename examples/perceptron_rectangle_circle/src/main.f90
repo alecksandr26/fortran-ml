@@ -20,14 +20,42 @@ program p_rectangle_circle
     real(real32) :: train_outputs(SAMPLE_SIZE)
     real(real32) :: matrix(HEIGHT, WIDTH)
 
+    integer(int32) :: i, sum
+    
+    ! Generate the weights
+    real(real32) :: weigths(WIDTH * HEIGHT), bias
+    real(real32) :: results(SAMPLE_SIZE)
+
+    ! Allocate the perceptron size
+    type(perceptron) :: per
+
+    ! set random values to the weights of the perceptron
+    call random_number(weigths)
+    call random_number(bias)
+
+    call p_init(per, weigths, bias)
+
     matrix = 0
     ! Catch all the training examples
-    
     call prepare_training_data(train_inputs, train_outputs)
-    ! call mat_fill_rect(matrix, 0, 0, WIDTH / 2, HEIGHT / 2, 1.0)
 
-    ! call mat_fill_circle(matrix, WIDTH / 2, HEIGHT / 2, 8, 1.0)
-    ! call mat_save_as_ppm(matrix, "mat.ppm")
+    ! Train the perceptron
+
+    call p_train(per, train_inputs, train_outputs, 0.01, 100)
+
+    ! Test the perceptron
+    call p_test(per, train_inputs, results)
+
+    do i = 1, SAMPLE_SIZE
+        if (train_outputs(i) == results(i)) sum = sum + 1
+    end do
+
+    ! write(*, "(f3.3), (a)") (sum / real(SAMPLE_SIZE)) * 100.0, " %"
+    print *, (sum / int(SAMPLE_SIZE)) * 100.0
+    print *, train_outputs(1:10)
+    print *, results(1:10)
+    
+    call p_free(per)
     
 contains
     ! TODO: Create two functions one to generate the circle and to generate rectangle
@@ -58,6 +86,10 @@ contains
                 write(file_path, "(a, i0, a)") "data/circle-", circle_c, ".ppm"
                 circle_c = circle_c + 1
             endif
+
+            ! Catch the generated data
+            train_inputs(i, :) = reshape(mat_for_sample, (/WIDTH * HEIGHT/))
+            train_outputs(i) = cor - 1
             
             ! Write the matrix
             call mat_save_as_ppm(mat_for_sample, file_path)

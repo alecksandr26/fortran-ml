@@ -35,7 +35,7 @@ contains
 
         per%n = size(w)         ! Fetch the size of the array of weights
         
-        ! Allocate the array of weights
+        ! Allocate the array of weights and copy it
         allocate(per%w(per%n))
         per%w(:) = w(:)
         per%b = b
