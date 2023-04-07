@@ -39,16 +39,26 @@ contains
         
         character(len = 20) :: file_path
         real(real32) :: mat_for_sample(WIDTH, HEIGHT) ! The used matrix for each example
-        integer(int32) :: i, cor
+        integer(int32) :: i, cor, circle_c, rect_c
         
-        ! Iterate each sample and generate 
+        rect_c = 0
+        circle_c = 0
+        
+        ! Iterate each sample and generate        
         do i = 1, SAMPLE_SIZE
+            cor = random_range(1, 2)
             call mat_fill_rect(mat_for_sample, 0, 0, WIDTH, HEIGHT, 0.0)
-            ! call mat_random_rect(mat_for_sample)
-            call mat_random_circle(mat_for_sample)
-
-            ! write(file_path, "(a, i0, a)") "data/rect-", i, ".ppm"
-            write(file_path, "(a, i0, a)") "data/circle-", i, ".ppm"
+            
+            if (cor == 1) then  ! rectangle
+                call mat_random_rect(mat_for_sample)
+                write(file_path, "(a, i0, a)") "data/rect-", rect_c, ".ppm"
+                rect_c = rect_c + 1
+            else
+                call mat_random_circle(mat_for_sample)
+                write(file_path, "(a, i0, a)") "data/circle-", circle_c, ".ppm"
+                circle_c = circle_c + 1
+            endif
+            
             ! Write the matrix
             call mat_save_as_ppm(mat_for_sample, file_path)
         end do
