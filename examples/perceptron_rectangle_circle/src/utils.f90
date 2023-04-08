@@ -34,10 +34,12 @@ contains
         ! The error variable and the iterators
         integer(int32) :: iostat, i, j, row, column
         character(len = 3) :: pixel
+        character(len = 50) :: width, height
         real(real32) :: color
 
         ! Open the file to be able to write raw bytes
-        open(unit = 10, file = file_path, action = "write", status = "replace", iostat = iostat)
+        open(unit = 10, file = file_path, action = "write", status = "replace", iostat = iostat, &
+            access = "stream", form = "unformatted")
 
         ! Check for errors
         if (iostat /= 0) then
@@ -46,8 +48,10 @@ contains
         end if
 
         ! Write the ppm header file
-        write (10, "(a)") "P6"
-        write (10, "(i0, a, i0, a)") int(WIDTH * PPM_SCALER), " ", int(HEIGHT * PPM_SCALER), " 255"
+        write (10) "P6", char(10)
+        write (width, "(i0)") WIDTH * PPM_SCALER
+        write (height, "(i0)") HEIGHT * PPM_SCALER
+        write (10) width, " ", height, " 255", char(10)
 
         do i = 1, HEIGHT * PPM_SCALER
             do j = 1, WIDTH * PPM_SCALER
@@ -68,7 +72,7 @@ contains
                 pixel(1:1) = achar(mod(int(color), 256))
                 pixel(2:2) = achar(0)
                 pixel(3:3) = achar(0)
-                write (10, "(a)", advance = "no") pixel
+                write (10) pixel
             end do
         end do
 

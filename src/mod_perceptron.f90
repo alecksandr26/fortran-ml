@@ -7,7 +7,7 @@ module mod_perceptron
     implicit none
 
     private
-    public p_init, p_free, p_train, p_test, perceptron
+    public p_init, p_free, p_train, p_test, perceptron, p_get_weights
 
     ! The type where we are going to contain the weights and bieas
     type perceptron
@@ -64,8 +64,8 @@ contains
         
         n = size(inputs, 1)     ! Catch the amount of inputs, sizeof(inputs[1])
         
-        do i = 1, nepochs            ! Start iterating
-            do j = 1, n ! Concurrent iteration
+        do concurrent(i = 1 : nepochs)            ! Start iterating
+            do concurrent(j = 1 : n) ! Concurrent iteration
                 ! Computing the perceptron calculation
                 output = per%b
                 do concurrent(k = 1 : per%n)
@@ -107,4 +107,12 @@ contains
             results(i) = step(results(i))
         end do
     end subroutine p_test
+
+    ! p_get_weights: To get the weights from the perceptron
+    subroutine p_get_weights(per, weigths)
+        type(perceptron), intent(in) :: per
+        real(real32), intent(out) :: weigths(:)
+        
+        weigths(:) = per%w(:)
+    end subroutine p_get_weights
 end module mod_perceptron
