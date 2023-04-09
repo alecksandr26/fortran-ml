@@ -14,7 +14,7 @@ program example
     inputs = reshape([0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0], [4,2])
     ! inputs = [[0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0]]
 
-    outputs = [0.0, 0.0, 0.0, 1.0] ! Outputs for the and logic gate
+    outputs = [- 1.0, - 1.0, - 1.0, 1.0] ! Outputs for the and logic gate
 
     ! Train the perceptron, with lrate = 0.1, nepochs = 1000
     call p_train(per, inputs, outputs, 0.1, 1000)
@@ -32,7 +32,7 @@ program example
     write(*,*) 'and_results:', results
 
 
-    outputs = [0.0, 1.0, 1.0, 1.0] ! Outputs for the  or logic gate
+    outputs = [-1.0, 1.0, 1.0, 1.0] ! Outputs for the  or logic gate
 
     ! Train the perceptron, with lrate = 0.1, nepochs = 1000
     call p_train(per, inputs, outputs, 0.1, 1000)
@@ -45,7 +45,7 @@ program example
     write(*,*) 'or_b:', per%b
     write(*,*) 'or_results:', results
 
-    outputs = [1.0, 1.0, 1.0, 0.0] ! Outputs for the  or logic gate
+    outputs = [1.0, 1.0, 1.0, - 1.0] ! Outputs for the  or logic gate
 
     ! Train the perceptron, with lrate = 0.1, nepochs = 1000
     call p_train(per, inputs, outputs, 0.1, 1000)

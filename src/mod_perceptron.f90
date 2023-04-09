@@ -24,7 +24,7 @@ contains
         if (output > 0.0) then
             step = 1.0
         else
-            step = 0.0
+            step = - 1.0
         end if
     end function step
     

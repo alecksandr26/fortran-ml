@@ -17,7 +17,7 @@ $(BIN): main.f90 $(OBJS)
 %.o: %.f90
 	$(F) $(F_FLAGS) -c $< -o $@ $(ASSERT_FLAGS)
 
-run:
+run: $(BIN)
 	./$(BIN) > $(DATA_FILE)
 	$(PY) $(PYTHON_PLOT_FILE) $(DATA_FILE)
 

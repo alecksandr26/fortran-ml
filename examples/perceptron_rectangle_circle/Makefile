@@ -24,7 +24,7 @@ $(DATA_DIR):
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 $(OBJ_DIR)
 	$(F) $(F_FLAGS) -c $< -J $(OBJ_DIR)/ -o $@  $(ASSERT_FLAGS)
 
-run:    $(DATA_DIR)
+run:    $(DATA_DIR) $(BIN)
 	./$(BIN)
 
 clean:

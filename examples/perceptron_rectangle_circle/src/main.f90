@@ -16,19 +16,21 @@ program p_rectangle_circle
     implicit none
 
     ! Allocate all the training inputs and outputs
-    real(real32) :: train_inputs(SAMPLE_SIZE, WIDTH * HEIGHT)
-    real(real32) :: test_inputs(SAMPLE_SIZE, WIDTH * HEIGHT)
-    real(real32) :: train_outputs(SAMPLE_SIZE)
-    real(real32) :: test_outputs(SAMPLE_SIZE)
-    character(len = 50) :: files_name(SAMPLE_SIZE)
+    real(real32) :: train_inputs(TRAINING_SIZE, WIDTH * HEIGHT)
+    real(real32) :: train_outputs(TRAINING_SIZE)
+    real(real32) :: test_inputs(TESTING_SIZE, WIDTH * HEIGHT)
+    real(real32) :: test_outputs(TESTING_SIZE)
+    character(len = 50) :: files_name(TRAINING_SIZE)
 
     integer(int32) :: i, sum
     
     ! Generate the weights
-    real(real32) :: weigths(WIDTH * HEIGHT), results(SAMPLE_SIZE)
+    real(real32) :: weigths(WIDTH * HEIGHT), results(TESTING_SIZE)
 
     ! Allocate the perceptron size
     type(perceptron) :: per
+
+    assert(TRAINING_SIZE >= TESTING_SIZE)
 
     print *, "[INFO] Loading the brain" 
     call load_brain(per, weigths)
@@ -56,7 +58,7 @@ program p_rectangle_circle
     print *, "[INFO] Perceptron tested"
 
     sum = 0
-    do i = 1, SAMPLE_SIZE
+    do i = 1, TESTING_SIZE
         if (results(i) == test_outputs(i)) then
             sum = sum + 1
         else
@@ -65,7 +67,7 @@ program p_rectangle_circle
     end do
 
     ! Print the results
-    print *, (sum / real(SAMPLE_SIZE)) * 100.0, sum, SAMPLE_SIZE
+    print *, (sum / real(TESTING_SIZE)) * 100.0, sum, TESTING_SIZE
 
     ! Save the brain
     print *, "[INFO] Saving new brain"
@@ -153,13 +155,14 @@ contains
         
         character(len = 50) :: file_path
         real(real32) :: mat_for_sample(WIDTH, HEIGHT) ! The used matrix for each examplen
-        integer(int32) :: i, cor, circle_c, rect_c
+        integer(int32) :: i, cor, circle_c, rect_c, n
 
 
         rect_c = 0
         circle_c = 0
+        n = size(outputs)
 
-        do i = 1, SAMPLE_SIZE
+        do i = 1, n
             cor = random_range(1, 2)
             call mat_fill_rect(mat_for_sample, 0, 0, WIDTH, HEIGHT, 0.0)
 
@@ -167,16 +170,16 @@ contains
                 call mat_random_rect(mat_for_sample)
                 write(file_path, "(a, i0, a)") "data/" // prefix // "_rect-", rect_c, ".ppm"
                 rect_c = rect_c + 1
+                outputs(i) = 1
             else
                 call mat_random_circle(mat_for_sample)
                 write(file_path, "(a, i0, a)") "data/" // prefix // "_circle-", circle_c, ".ppm"
                 circle_c = circle_c + 1
+                outputs(i) = -1
             endif
-            
             
             ! Catch the generated data
             inputs(i, :) = reshape(mat_for_sample, (/WIDTH * HEIGHT/))
-            outputs(i) = cor - 1
             files_name(i) = file_path
             
             ! Write the matrix
