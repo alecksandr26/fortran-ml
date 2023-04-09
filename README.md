@@ -9,4 +9,4 @@ make
 ## Example perceptron
 An example of the linearly in some logic gates.
 
-![Alt text](examples/perceptron_logic_gates/logic_gates.png)
+![Alt text](assets/logic_gates.png)
