@@ -7,7 +7,7 @@ make
 ```
 # Examples
 ## Perceptrons examples
-An example of the linearly in some logic gates.
+An example of the linear separability in some logic gates.
 
 ![logic_gates](assets/logic_gates.png)
 
