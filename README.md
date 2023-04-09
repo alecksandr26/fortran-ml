@@ -9,9 +9,8 @@ make
 ## Example perceptron
 An example of the linearly in some logic gates.
 
-![Alt text](assets/logic_gates.png)
+![logic_gates](assets/logic_gates.png)
 
+This is a graphical representation of the perceptrons weights, the perceptron try to classify rectangles and circles.
 
-## A graphical representation of the weights of the perceptron
-
-![Alt text](assets/brain.ppm)
+![brain](assets/brain.ppm)
