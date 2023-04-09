@@ -13,4 +13,4 @@ An example of the linearly in some logic gates.
 
 This is a graphical representation of the perceptrons weights, the perceptron try to classify rectangles and circles.
 
-![brain](assets/brain.ppm)
+![brain](assets/brain.png)
