@@ -10,3 +10,8 @@ make
 An example of the linearly in some logic gates.
 
 ![Alt text](assets/logic_gates.png)
+
+
+## A graphical representation of the weights of the perceptron
+
+![Alt text](assets/brain.ppm)
