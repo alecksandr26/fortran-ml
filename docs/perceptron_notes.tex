@@ -8,6 +8,7 @@
 \usepackage{pgfplots}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{amssymb} 
 
 \lstset{language=[90]Fortran,
   basicstyle=\ttfamily,
@@ -130,7 +131,31 @@ Perceptron model works in two important steps as follows.
     y = activation(\sum_{i = 0}^{n}(w_i \cdot x_i) + b) = activation(\vec{w} \cdot \vec{x} + b)
   \]
 \end{enumerate}
-At the end what we are doing here is a simple dot product.
+At the end what we are doing here is a simple dot product of two vectors.
+\[
+  \sum_{i = 0}^{n}(w_i \cdot x_i) + b = \vec{w} \cdot \vec{x}
+\]
+Where.
+\[
+  \vec{w} = (b, w_1, \cdots, w_n)
+\]
+\[
+  w_0 = b
+\]
+\[
+  \vec{x} = (1, x_1, \cdots, x_n)
+\]
+\[
+  x_0 = 1
+\]
+At the end we can think that this is hiperplane.
+
+\begin{figure}[!hb]
+  \centering
+  \includegraphics[scale = 1]{plane.png}
+  \caption{A hyperplane}
+\end{figure}
+
 \subsection{From the perceptron algorithm to code:}
 Firstly declare the threshold variable or bias variable,
 this variable will be used as a threshold or bias for the activation function.
@@ -151,11 +176,12 @@ sum = 0.0
 for (i = 0, i < inputs.length, i++)
     sum += inputs[i] * weights[i]
 \end{verbatim}
-And at the end just apply an activation function to the weighted sum by checking if sum is greater
+And at the end just apply an activation function, a sign function to the weighted sum by checking
+if sum is greater
 than the threshold value of 1.5. If sum is greater than 1.5,
-the activate variable is set to 1, otherwise, it is set to 0.
+the activate variable is set to 1, otherwise, it is set to -1.
 \begin{verbatim}
-activate = (sum > threshold) ? 1 : 0
+activate = (sum > threshold) ? 1 : -1
 \end{verbatim}
 Overall, this code represents a simple example of how a perceptron might work by calculating a
 weighted sum of inputs and weights and applying a threshold activation function to produce a
@@ -177,7 +203,6 @@ solution.\\
   \includegraphics{linearly.png}
   \caption{Linear separability}
 \end{figure}
-\newpage
 \subsubsection{The Mathematical definition behind linear separability:}
 Let $X_0$ and $X_1$ be two sets of points in an n-dimensional Euclidean space. Then $X_0$ and $X_1$
 are linearly separable, if there exist $n + 1$ real numbers $w_1, w_2, \cdots, w_n, k$ such that
@@ -194,7 +219,7 @@ You must create a training function with these characteristics using the previou
 Define the activation function which at the end it is a simple binary function.
 \begin{verbatim}
 int activation(x)
-    return (x > 0) ? 1 : 0
+    return (x > 0) ? 1 : -1
 \end{verbatim}
 Define the learning rate and a number of epochs, which is the amount of times that we are going
 train the perceptron and the learning rate represents how fast our perceptron is going to learn.
@@ -235,87 +260,39 @@ as input.
 \[
   f(\vec{x}) = 
   \begin{cases}
-    1 &\quad if (\vec{w} \cdot \vec{x} - b) > 0  \\
-    0 &\quad \text{otherwise} \\
+    1 &\quad if \vec{w} \cdot \vec{x} > 0  \\
+    -1 &\quad \text{otherwise} \\
   \end{cases}
 \]
-where $\vec{x}$ is the input vector, $\vec{w}$ the coefficients, at the end we are creating a plane.
-\begin{figure}[h]
-  \centering
-  \includegraphics[scale = 0.98]{plane.png}
-  \caption{Plane}
-\end{figure}
 
-The range of this function $f(\vec{x})$ is $\{1, 0\}$ so imagine a graph like this, where we try
-some input but we won't get the desired output.
-
-\begin{tikzpicture}
-\begin{axis}[
-scale = 1.2,
-xmin = 0, xmax = 10,
-ymin = 0, ymax = 10,
-axis lines* = left,
-xtick = {0}, ytick = \empty,
-clip = false,
-]
-
-\addplot[color = black, mark = *, only marks, mark size = 3pt] coordinates {(5.0, 5.0)};
-
-\node [above] at (50, 60) {Desired result};
-\node [above] at (50, 50) {$(\vec{x}, y)$};
-
-\addplot[color = black, mark = *, only marks, mark size = 3pt] coordinates {(5.0, 0)};
-\node [above] at (50, 0) {$(\vec{x}, f(\vec{x}))$};p
-\node [above] at (50, 10) {Result obtained};
-
-\node [below] at (50, 0) {$\vec{x}$};
-\node [left] at (0, 50) {$1$};
-% Labels
-\node [right] at (current axis.right of origin) {$\vec{x}$};
-\node [above] at (current axis.above origin) {$y$};
-\end{axis}
-\end{tikzpicture}
-
-Then we can formulate an error function with the input $\vec{v}$, the desired result $y$ and the
-result obtained $f(\vec{x})$.\\
+Where $\vec{w} = (b, w_1, \cdots, w_n)$
+is the coefficients or weights, $\vec{x} = (1, x_1, \cdots, x_n)$
+the input vector, so from this idea we can come up
+with something like this.
 \[
-  E(\vec{x}) = y - f(\vec{x})
-\]\\
-From this equation we can obtain the desired result.\\
-\[
-  E(\vec{x}) + f(\vec{x}) = y
-\]\\
-Assume that $E(\vec{x}) = \vec{m} \cdot \vec{x} + b$ this is necessary to compute the
-next aproximation of the weights.\\
-\[
-  \vec{m} \cdot \vec{x} + b + \vec{w}_{i} \cdot \vec{x} + b_{i} = y
+  y_t = 1 \implies \vec{w} \cdot \vec{x}_t > 0
 \]
+
 \[
-  (\vec{m} +  \vec{w}_{i})\vec{x} + (b + b_{i}) = y
-\]\\
-So this is how works...
-\[
-  \vec{w}_{i + 1} = \vec{w}_i + \vec{m}
+  y_t =  - 1 \implies \vec{w} \cdot \vec{x}_t \le 0
 \]
+Where $(\vec{x}_t, y_t) \in \mathbb{D}$ which is the whole dataset, then from these implications
+we can formulate two inequalities that
+represent when the perceptron is wrong and when it is correct.
 \[
-  b_{i + 1} = b_i + b
+  \text{Correct} \implies y_t \cdot \vec{x}_t \cdot \vec{w} > 0
 \]
-To compute $\vec{m}$ from $E(\vec{x})$.\\
+
 \[
-  \vec{m} = \frac{E(\vec{x}) - b}{\vec{x}} = (E(\vec{x}) - b) \cdot (\frac{1}{\vec{x}})
-\]\\
-Then from this we can infer the lines of code of how the weights and bias are adjusted, at the
-end what we want is to approximate slowly step by step, for that reason we multiply the error
-with the small learning rate.
-\begin{verbatim}
-learning_rate = 0.1
-\end{verbatim}
-\begin{verbatim}
-error = label[j] - output
-for (k = 0, k < weights.length, k++)
-    weights[k] += learning_rate * error * inputs[j][k]
-b += learning_rate * error
-\end{verbatim}
+  \text{Wrong} \implies y_t \cdot \vec{x}_t \cdot \vec{w} \le 0
+\]
+
+At the end what we want to claim is the convergence of the perceptron which looks like this.
+\[
+  \exists \vec{\theta}^* \in \mathbb{R}^{d} \quad|\quad y_t\vec{\theta}^*\vec{x}_t > 0,\quad
+  \forall (\vec{x}_t, y_t) \in \mathbb{D}
+\]
+Where $\vec{\theta}^*$ is the desired vector configuration which classifies the inputs perfectly.
 \section{Example:}
 This is an example of how we can use the perceptron as a binary classifier, what I'm going to do
 is to create a program which identifies when is a circle and when is a rectangle.
