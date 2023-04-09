@@ -6,7 +6,7 @@ You need to install [assertf](https://github.com/alecksandr26/assert-fortran/blo
 make
 ```
 # Examples
-## Example perceptron
+## Perceptrons examples
 An example of the linearly in some logic gates.
 
 ![logic_gates](assets/logic_gates.png)
