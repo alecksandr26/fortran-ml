@@ -8,7 +8,8 @@
 \usepackage{pgfplots}
 \usepackage{xcolor}
 \usepackage{listings}
-\usepackage{amssymb} 
+\usepackage{amssymb}
+
 
 \lstset{language=[90]Fortran,
   basicstyle=\ttfamily,
@@ -19,7 +20,9 @@
 
 \pgfplotsset{width=10cm,compat=1.9}
 \graphicspath{{./img}}
+
 \usepgfplotslibrary{external}
+\usetikzlibrary{calc}
 
 \title{Perceptron}
 \author{Erick Alejandro Carrillo López}
@@ -287,15 +290,298 @@ represent when the perceptron is wrong and when it is correct.
   \text{Wrong} \implies y_t \cdot \vec{x}_t \cdot \vec{w} \le 0
 \]
 
-At the end what we want to claim is the convergence of the perceptron which looks like this.
+At the end what we want is desired vector $\vec{\theta}^*$ which fulfills a single characteristic.
 \[
   \exists \vec{\theta}^* \in \mathbb{R}^{d} \quad|\quad y_t\vec{\theta}^*\vec{x}_t > 0,\quad
   \forall (\vec{x}_t, y_t) \in \mathbb{D}
 \]
-Where $\vec{\theta}^*$ is the desired vector configuration which classifies the inputs perfectly.
+Where $\vec{\theta}^*$ is the desired vector configuration which classifies the inputs perfectly,
+then when the perceptron gets an error this both inequalities are true.
+\[
+  y_t\vec{w}_k \vec{x} \le 0 \Leftrightarrow  y_t \not = y'
+\]
+Where $y'$ is the result obtained,
+then in the algorithm when that happens we update the $\vec{w}$ like this.
+\[
+  \vec{w}_{k + 1} = \vec{w}_{k} + y_t\vec{x}_t
+\]
+At the first time it doesn't make sense why it works like that, well think in this chart.
+\begin{center}
+\begin{tikzpicture}[scale=1.5]
+  \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
+  \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
+\end{tikzpicture} \\
+\end{center}
+Again the $\vec{\theta}^*$ is the desired vector configuration which for any
+$(\vec{x}_t, y_t) \in \mathbb{D}$ returns an $y' = y_t$ and the $\vec{w}_k$ is the current k-th iteration
+of the weights, obviously we don't know where $\vec{\theta}$ is, but we can approximate $\vec{w}_k$
+to $\vec{\theta}^*$ by a 
+simple additions of vectors,
+then We can put another vector $y_t \cdot \vec{x}_t$ to this chart.
+\begin{center}
+\begin{tikzpicture}[scale=1.5]
+  \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
+  \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
+  \draw[thick,->] (2,0) -- (5,-1) node[anchor=south west]{$y_t\vec{x}_t$};
+\end{tikzpicture} \\
+\end{center}
+Then if we compute
+the dot product of these two vectors $y_t\vec{x}_t \cdot \vec{\theta}^*$ this inequalitie
+becomes true.
+\[
+  y_t\vec{\theta}^*\vec{x}_t > 0
+\]
+Because again the $\vec{\theta}^*$ is the desired vector configuration, the meaning of the dot product
+of two vectors is how much they are pointing in the same direction,
+if the dot product of two vectors is positive, it means they are pointing in
+roughly the same direction, if it is negative, they are pointing in roughly opposite
+directions, and if it is zero, they are perpendicular (at a right angle) to each other,
+then the dot product of two Euclidean vectors $\vec{v}$ and $\vec{u}$ is defined by.
+\[
+  \vec{v} \cdot \vec{u} = ||\vec{v}|| \cdot ||\vec{u}|| \cdot \cos{\theta}
+\]
+Where $\theta$ is the angle between $\vec{v}$ and $\vec{u}$, so
+from that idea
+by this chart  we can perfectly infer that $y_t\vec{x}_t \cdot \vec{w}_k \le 0$ by their angle.\\
+\begin{center}
+\begin{tikzpicture}[scale=1.5]
+  \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
+  \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
+  \draw[thick,->] (2,0) -- (5,-1) node[anchor=south west]{$y_t\vec{x}_t$};
+
+  \draw let \p1 = (-2,1), \p2 = (5,-1.78), \n1 = {atan2(\y1,\x1)}, \n2 = {atan2(\y2,\x2)} in (2,0) + (\n1:0.8) arc (\n1:\n2:0.8) node[midway, above right] {$\theta$};
+\end{tikzpicture} \\
+\end{center}
+So think in the addition of vector as way to rotate a vector, look if I sum $\vec{w}_k + y_t\vec{x}_t$,
+and I get the next $k + 1$ vector $\vec{w}_{k + 1}$.
+\begin{center}
+\begin{tikzpicture}[scale=1.5]
+  \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
+  \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
+  \draw[thick,->] (2,0) -- (5,-1) node[anchor=south west]{$y_t\vec{x}_t$};
+  \draw[thick,->] (2,0) -- (3,0.5) node[anchor=south west]{$\vec{w}_{k + 1} = \vec{w}_k + y_t\vec{x}_t$};
+  \draw[dashed] (0,1) -- (3,0.5);
+  
+  \draw let \p1 = (2,1), \p2 = (5,-1.78), \n1 = {atan2(\y1,\x1)}, \n2 = {atan2(\y2,\x2)} in (2,0) + (\n1:0.8) arc (\n1:\n2:0.8) node[midway, above right] {$\theta$};
+\end{tikzpicture} \\
+\end{center}
+With this new vector $\vec{w}_{k+1}$ we generate a new angle $\theta$ that makes
+this inequalitie $\vec{w}_{k+1} \cdot y_t\vec{x}_t \le 0$
+false 
+which implies that the perceptron have learned a new pattern, basically we adjust the weights
+ to new direction.
+\[
+  \neg (\vec{w}_{k+1} \cdot y_t\vec{x}_t \le 0) \implies \vec{w}_{k+1} \cdot y_t\vec{x}_t > 0\quad |
+  \quad y' = y_t, \quad \vec{w}_k \rightarrow \vec{\theta}^*
+\]
+We are arriving to a conjecture which is that it looks like we need a finite amount of $k$
+iterations to perfectly separate the points or vectors $\vec{x}_t$ in $\mathbb{D}$
+making $\vec{w}_k \rightarrow \vec{\theta}^*$, creating that perfectly
+hyperplane that separates the points,
+then this is important because if that amount of iterations is infinite then the
+algorithm is useless, but if
+it is not then becomes useful,  spoiler, it is finite amounts of iterations for any finite
+set of tuples $(\vec{x}_t, y_t) \in \mathbb{D}$, lets proof that.
+\subsection{Perceptron Convergence Proof:}
+Lets think in that variable $k$ which represents the amount of iterations,
+It should be a finite natural number.
+\[
+  k \in \mathbb{N}
+\]
+Then before to continue with the proof we need to do an assumption,
+we are going to scale our $\vec{\theta}^*$ in another words we are going to change it
+for an easy manipulation,
+so for this section we are going to work with a new vector.
+\[
+  \vec{\theta}^* = \alpha \cdot \vec{\theta}\quad |\quad ||\vec{\theta}|| = 1
+\]
+So we scale the desired vector $\vec{\theta}^*$ for getting its unitary vector $\vec{\theta}$,
+At the end the inequality is still being true.
+\[
+  y_t\vec{\theta}^*\vec{x}_t > 0
+\]
+\[
+  y_t\alpha\cdot\vec{\theta}\vec{x}_t > 0
+\]
+\[
+  \frac{1}{\alpha} \cdot y_t\alpha\vec{\theta}\vec{x}_t > 0 \cdot \frac{1}{\alpha}
+\]
+\[
+  y_t\vec{\theta}\vec{x}_t > 0
+\]
+Obviously all the computed values with this new vector $\vec{\theta}$ are going to be lesser than
+the comptued values with $\vec{\theta}^*$, to be exact is going to be $\alpha$ times greater, and
+actually if you think we don't care how big these outputs are, we only care
+that they are big enoguh to make that statement true the whole time.
+\[
+  y_t\vec{\theta}^*\vec{x}_t > y_t\vec{\theta}\vec{x}_t > 0
+\]
+
+To just finished with this idea think on this statement
+and lets continue with the proof of the convergence.
+\[
+  \exists \vec{\theta}^* = \alpha \cdot \vec{\theta}\quad|\quad
+  y_t\vec{\theta}^*\vec{x}_t > 0 \wedge
+  y_t\vec{\theta}\vec{x}_t > 0,
+  \quad \forall(\vec{x}_t, y_t)
+  \in \mathbb{D}
+\]
+
+Then we need to think in this
+dot product $\vec{w}_{k + 1} \cdot \vec{\theta}$ because this dot product
+will grow but it will never decrease and why is that?, well because of the algorithm we only
+rotate or adjust $\vec{w}_{k}$ when $\vec{w}_k \cdot \vec{x}_ty_t \le 0$, look this chart.
+\begin{center}
+\begin{tikzpicture}[scale = 0.8]
+  \draw[->, thick] (-5,0)--(5,0) node[right]{$t$};
+  \draw[->, thick] (0,-5)--(0,5) node[above]{$\vec{w}_{k + 1} \cdot \vec{\theta}$};
+  
+  \draw[black, thick] (0, -2) -- (0, -1) -- (0.5,-0.5) -- (1,0) -- (1.5, 1.5) -- (2, 2) -- (2.5, 3) -- (3, 3.5) -- (4, 3.5) -- (5, 5);
+\end{tikzpicture}
+\end{center}
+You can imagine something like this, it never decreases, so why this dot product is useful?, well
+because this dot product represents how the weights are being adjust or how the perceptron learns,
+it would start in some negative real number but it will finish in some positive value,
+and as I said before there is going to be a moment where $\vec{w}_{k+1} \cdot \vec{\theta}$
+will never increase
+anymore, at the end we would find inserting how this dot product grows through
+the instances of $(\vec{x}_t, y_t)$.
+\begin{center}
+\begin{tikzpicture}[scale = 0.8]
+  \draw[->, thick] (-5,0)--(10,0) node[right]{$t$};
+  \draw[->, thick] (0,-5)--(0,5) node[above]{$\vec{w}_{k + 1} \cdot \vec{\theta}$};
+  
+  \draw[black, thick] (0, -2) -- (0, -1) -- (0.5,-0.5) -- (1,0) -- (1.5, 1.5) -- (2, 2) -- (2.5, 3) -- (3, 3.5) -- (4, 3.5) -- (5, 5) -- (10, 5);
+\end{tikzpicture}
+\end{center}
+Let's imagine that we already have made a some $k$ iteration,
+then we want to know what would be 
+the minimum difference between this $k$ iterations $\vec{w}_{k+1} \cdot \vec{\theta}$ with It's
+previous iteration $\vec{w}_{k} \cdot \vec{\theta}$, well.
+\[
+  \vec{w}_{k + 1} \cdot \vec{\theta} = (\vec{w}_{k} + y_t\vec{x}_t) \vec{\theta}
+  = \vec{w}_{k}\vec{\theta} + y_t\vec{x}_t\vec{\theta}
+\]
+\[
+  \vec{w}_{k + 1} \cdot \vec{\theta} -  \vec{w}_{k}\vec{\theta}
+  =  y_t\vec{x}_t\vec{\theta}
+\]
+So basically this is
+the difference $y_t\vec{x}_t\vec{\theta}$ which is $y_t\vec{x}_t\vec{\theta} > 0$ and so
+from this expression we can create constant gamma which represents the minimum
+difference of some pair of values $\vec{w}_{k+t} \cdot \vec{\theta} - \vec{w}_{k} \cdot \vec{\theta}$
+by any $k$ iteration.
+\[
+  \gamma = minimum(y_t \vec{x}_t\vec{\theta}) \quad|\quad \forall (\vec{x}_t, y_t) \in \mathbb{D}
+\]
+We know that $y_t \in \{1, -1\}$, so we can forget it and use a simple absolute value.
+\[
+  \gamma = minimum(|\vec{x}_t\vec{\theta}|) \quad|\quad \forall (\vec{x}_t, y_t) \in \mathbb{D}
+\]
+\[
+  |\vec{w}_{k + 1} \cdot \vec{\theta} -  \vec{w}_{k}\vec{\theta}|
+  \ge \gamma\quad | \quad \forall \vec{w}_{k+1}
+\]
+
+Finally we can abstract this idea of $\gamma$ to an inequalitie for all the $k$ iterations.
+\[
+  \gamma \cdot k \le |\vec{w}_{k+1} \cdot \vec{\theta}| \le ||\vec{w}_{k+1}||\cdot ||\vec{\theta}||
+  = ||\vec{w}_{k+1}||\quad|\quad \forall \vec{w}_{k + 1}
+\]
+\[
+  \gamma \cdot k \le ||\vec{w}_{k+1}||\quad|\quad \forall \vec{w}_{k + 1}
+\]
+As you can see we replace $||\vec{\theta}|| = 1$, because if unitary vector and
+$\gamma \cdot k$ works as lower bound for any $|\vec{w}_{k + 1}\cdot \vec{\theta} |$, this lead us
+to think if there exist a higher bound, spoiler, It exists, to find it now we need to think in another
+dot product which is this.
+\[
+  \vec{w}_{k + 1} \cdot \vec{w}_{k+1}
+\]
+In some way this dot product is an scalar way to represent each state of our weights, It is chaotic
+because this dot product would decrease and increase and something to take not It is that
+always this dot product will be
+$\vec{w}_{k + 1} \cdot \vec{w}_{k+1} > 0$, this is because is the same vector,
+so you can think in a chart like this.
+\begin{center}
+\begin{tikzpicture}[scale = 1]
+  \draw[->, thick] (0,0)--(10,0) node[right]{$t$};
+  \draw[->, thick] (0,0)--(0,5) node[above]{$\vec{w}_{k + 1} \cdot \vec{w}_{k + 1}$};
+
+  \draw[black, thick] (0,5) -- (1, 1) -- (2, 2.5) -- (3, 2.5) -- (4, 5) -- (6, 5) -- (8, 1) -- (9, 4);
+\end{tikzpicture}
+\end{center}
+Now we are thinking
+what is the larger difference between
+any $k$ iteration $\vec{w}_{k+1} \cdot \vec{w}_{k+1}$ with It's
+previous iteration $\vec{w}_{k} \cdot \vec{w}_{k}$, well.
+\[
+  \vec{w}_{k + 1} \cdot \vec{w}_{k + 1} = (\vec{w}_{k} + y_t\vec{x}_t) \cdot (\vec{w}_{k} + y_t\vec{x}_t)
+  = \vec{w}_k\vec{w}_k + 2y_t\vec{w}_k\vec{x}_t + y_t^2\vec{x}_t\vec{x}_t
+\]
+
+\[
+  \vec{w}_{k + 1} \cdot \vec{w}_{k + 1} - \vec{w}_k \cdot \vec{w}_k
+  = 2y_t\vec{w}_k\vec{x}_t + y_t^2\vec{x}_t\vec{x}_t
+\]
+Then this is the difference $2y_t\vec{w}_k\vec{x}_t + y_t^2\vec{x}_t\vec{x}_t$,
+so we can rewrite this expression
+like this.
+\[
+  2y_t\vec{w}_k\vec{x}_t + \vec{x}_t\vec{x}_t
+\]
+Because $y_t \in \{1, -1\}$ so $y_t^2 = 1$ for all $(\vec{x}_t, y_t) \in \mathbb{D}$, so what is going
+to be the maximum difference between any $\vec{w}_{k+1} \cdot \vec{w}_{k+1}$, so thinking in this
+expression $2y_t\vec{w}_k\vec{x}_t + \vec{x}_t\vec{x}_t$ to be specific thinking on the first quotient,
+this quotient always is going to be $2y_t\vec{w}_k\vec{x}_t \le 0$, so we eliminate this
+expression and create an inequalitie, because we want the largest posible value.
+
+\[
+  \vec{w}_{k + 1} \cdot \vec{w}_{k + 1} - \vec{w}_k \cdot \vec{w}_k
+  \le \vec{x}_t\vec{x}_t
+\]
+Then we can create our constant $R^2$
+ which represents the largest
+difference of some pair of values $\vec{w}_{k+t} \cdot \vec{w}_{k+1} - \vec{w}_{k} \cdot \vec{w}_k$
+by any $k$ iteration and why $R^2$ ?, well.
+\[
+  R = maximum(||\vec{x}_t||) \quad|\quad \forall (\vec{x}_t, y_t) \in \mathbb{D}
+\]
+\[
+  R = ||\vec{x}_t|| = \sqrt{\sum_{i = 0}^{n}x_i^2}
+\]
+\[
+  R^2 = ||\vec{x}_t||^2 = \sqrt{\sum_{i = 0}^{n}x_i^2}^2 = \sum_{i = 0}^{n}x_i^2 = \vec{x}_t \cdot \vec{x}_t
+\]
+Finally, we chose this constant $R^2$, and we don't choose $maximum(|\vec{x}_t\vec{\theta}|)$,
+because we are searching to a higher boundary, and as $\|\vec{\theta}|| \le ||\vec{x_t}||$ always
+is going to be lesser to $R^2$, so finally we can mix everything together, so we can assume this.
+\[
+  \gamma^2k^2 \le ||\vec{w}_{k+1}||^2 = \vec{w}_{k+1} \cdot \vec{w}_{k+1}
+\]
+So we can take that and create our finall inequalitie, which at the end is this.
+\[
+  \gamma^2k^2 \le \vec{w}_{k+1} \cdot \vec{w}_{k+1} \le k \cdot R^2\quad |\quad \forall\vec{w}_{k+1}
+\]
+Here we are boundary the amount of change, if you want to see this like
+that, of the weights of the perceptron
+for all the instances of $\vec{w}_{k + 1}$, from this two bounds we can get a finite number
+of steps or times that the perceptron needs for update its weights to converge, just like this.
+\[
+  \gamma^2k^2 \le k \cdot R^2
+\]
+\[
+  \frac{1}{\gamma^2 \cdot k} \cdot \gamma^2k^2 \le k \cdot R^2 \cdot \frac{1}{\gamma^2 \cdot k}
+\]
+\[
+  k \le \frac{R^2}{\gamma^2}
+\]
+That's it, $k$ is a real number which means that takes at least $\frac{R^2}{\gamma^2}$
+updates or steps to converge.
 \section{Example:}
 This is an example of how we can use the perceptron as a binary classifier, what I'm going to do
 is to create a program which identifies when is a circle and when is a rectangle.
+
 \subsection{Perceptron module in fortran:}
 Firstly I made a simple perceptron module in fortran which contains the weights, a bias and with a
 simple step activation function.
@@ -420,8 +706,6 @@ Then the \textbf{test} and \textbf{training} functions.
 \end{lstlisting}
 \subsection{Main program:}
 
-
-
 \section{Conclusion:}
 Perceptrons are limited to linearly separable problems, which means that they can only learn to
 classify data that can be separated by a hyperplane. However, they have been used as building blocks
@@ -444,8 +728,9 @@ they have contributed significantly to the development of artificial intelligenc
 \item Training a Perceptron. (n.d.). \url{https://www.w3schools.com/ai/ai_training.asp}
 \item Desmedt, S. (2019, May 12). The Math behind Neural Networks: Part 1 - The Rosenblatt Perceptron.
   CodeProject.
-  \url{https://www.codeproject.com/Articles/4047091
-    /The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}
+  \url{https://www.codeproject.com/Articles/4047091/The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}
+\item Wikipedia contributors. (2023, March 21). Dot product. Wikipedia.
+  \url{https://en.wikipedia.org/wiki/Dot_product}
 \end{itemize}
 
 
