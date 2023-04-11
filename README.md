@@ -6,6 +6,7 @@ You need to install [assertf](https://github.com/alecksandr26/assert-fortran/blo
 make
 ```
 # Notes
+These are my notes of each AI model.
 1. [Perceptron](https://github.com/alecksandr26/machine-learning-code/blob/main/docs/perceptron_notes.pdf)
 # Examples
 ## Perceptrons examples
