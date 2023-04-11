@@ -3,7 +3,7 @@ PY = python3
 AR = ar rc
 PDF = pdflatex
 
-F_FLAGS = -ggdb -pedantic -Wall -cpp
+F_FLAGS = -ggdb -pedantic -Wall -cpp -fopenmp
 ASSERT_FLAGS = -I /usr/include -lassertf
 
 SRC_DIR = src

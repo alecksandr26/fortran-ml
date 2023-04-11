@@ -17,16 +17,16 @@ module mod_perceptron
     end type perceptron
 contains
     
-    ! step: A simple activation function
-    pure function step(output)
+    ! sign_act: A simple activation function
+    pure function sign_act(output)
         real(real32), intent(in) :: output
-        real(real32) :: step
+        real(real32) :: sign_act
         if (output > 0.0) then
-            step = 1.0
+            sign_act = 1.0
         else
-            step = - 1.0
+            sign_act = - 1.0
         end if
-    end function step
+    end function sign_act
     
     ! p_init: Receives a perceptron type and adds to it the weights and bias
     subroutine p_init(per, w, b)
@@ -57,35 +57,43 @@ contains
         real(real32), intent(in) :: inputs(:,:) ! Bindimensional array
         real(real32), intent(in) :: outputs(:), lrate ! Learning rate
         integer(int32), intent(in) :: nepochs        ! Num of epochs
+        real(real32), allocatable :: results(:), errors(:), deltas(:)
 
-        ! The size and the iterators
+        ! The size and more arrays to catch the necessary data for the training
         integer(int32) :: n, i, j, k
-        real(real32) :: output, error, delta
         
         n = size(inputs, 1)     ! Catch the amount of inputs, sizeof(inputs[1])
+
+        allocate(results(n))
+        allocate(errors(n))
+        allocate(deltas(n))
         
         do concurrent(i = 1 : nepochs)            ! Start iterating
             do concurrent(j = 1 : n) ! Concurrent iteration
                 ! Computing the perceptron calculation
-                output = per%b
+                results(j) = per%b
                 do concurrent(k = 1 : per%n)
-                    output = output + per%w(k) * inputs(j, k)
+                    results(j) = results(j) + per%w(k) * inputs(j, k)
                 end do
                 
-                ! The step function
-                output = step(output)
+                ! The activation function
+                results(j) = sign_act(results(j))
 
                 ! Compute the error 
-                error = outputs(j) - output
-                delta = lrate * error
+                errors(j) = outputs(j) - results(j)
+                deltas(j) = lrate * errors(j)
 
                 ! Update the perceptron
-                per%b = per%b + delta
+                per%b = per%b + deltas(j)
                 do concurrent(k = 1 : per%n)
-                    per%w(k) = per%w(k) + delta * inputs(j, k)
+                    per%w(k) = per%w(k) + deltas(j) * inputs(j, k)
                 end do
             end do
         end do
+
+        deallocate(results)
+        deallocate(errors)
+        deallocate(deltas)
     end subroutine p_train
 
     ! p_test: To test the perceptron with some inputs
@@ -104,7 +112,7 @@ contains
             do concurrent(j = 1 : per%n)
                 results(i) = results(i) + per%w(j) * inputs(i, j)
             end do
-            results(i) = step(results(i))
+            results(i) = sign_act(results(i))
         end do
     end subroutine p_test
 

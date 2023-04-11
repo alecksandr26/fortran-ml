@@ -9,7 +9,7 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{amssymb}
-
+\usepackage{float}
 
 \lstset{language=[90]Fortran,
   basicstyle=\ttfamily,
@@ -290,12 +290,13 @@ represent when the perceptron is wrong and when it is correct.
   \text{Wrong} \implies y_t \cdot \vec{x}_t \cdot \vec{w} \le 0
 \]
 
-At the end what we want is desired vector $\vec{\theta}^*$ which fulfills a single characteristic.
+At the end what we want is a desired vector $\vec{\theta}^*$ which fulfills a single characteristic.
 \[
   \exists \vec{\theta}^* \in \mathbb{R}^{d} \quad|\quad y_t\vec{\theta}^*\vec{x}_t > 0,\quad
   \forall (\vec{x}_t, y_t) \in \mathbb{D}
 \]
-Where $\vec{\theta}^*$ is the desired vector configuration which classifies the inputs perfectly,
+Where $\vec{\theta}^*$ is the desired vector configuration which classifies the inputs perfectly
+and $\mathbb{D}$ is the data set,
 then when the perceptron gets an error this both inequalities are true.
 \[
   y_t\vec{w}_k \vec{x} \le 0 \Leftrightarrow  y_t \not = y'
@@ -305,7 +306,8 @@ then in the algorithm when that happens we update the $\vec{w}$ like this.
 \[
   \vec{w}_{k + 1} = \vec{w}_{k} + y_t\vec{x}_t
 \]
-At the first time it doesn't make sense why it works like that, well think in this chart.
+In the algorithm we try to make those changes less aggressive, so to understand
+why we adjust the weights like that, think on this chart.
 \begin{center}
 \begin{tikzpicture}[scale=1.5]
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
@@ -314,10 +316,10 @@ At the first time it doesn't make sense why it works like that, well think in th
 \end{center}
 Again the $\vec{\theta}^*$ is the desired vector configuration which for any
 $(\vec{x}_t, y_t) \in \mathbb{D}$ returns an $y' = y_t$ and the $\vec{w}_k$ is the current k-th iteration
-of the weights, obviously we don't know where $\vec{\theta}$ is, but we can approximate $\vec{w}_k$
+of the weights, obviously we don't know where $\vec{\theta}^*$ is, but we can approximate $\vec{w}_k$
 to $\vec{\theta}^*$ by a 
 simple additions of vectors,
-then We can put another vector $y_t \cdot \vec{x}_t$ to this chart.
+then We can put the vector $y_t \cdot \vec{x}_t$ in the chart.
 \begin{center}
 \begin{tikzpicture}[scale=1.5]
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
@@ -341,8 +343,7 @@ then the dot product of two Euclidean vectors $\vec{v}$ and $\vec{u}$ is defined
   \vec{v} \cdot \vec{u} = ||\vec{v}|| \cdot ||\vec{u}|| \cdot \cos{\theta}
 \]
 Where $\theta$ is the angle between $\vec{v}$ and $\vec{u}$, so
-from that idea
-by this chart  we can perfectly infer that $y_t\vec{x}_t \cdot \vec{w}_k \le 0$ by their angle.\\
+from that idea we can perfectly infer that $y_t\vec{x}_t \cdot \vec{w}_k \le 0$ by their angle.\\
 \begin{center}
 \begin{tikzpicture}[scale=1.5]
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
@@ -352,8 +353,8 @@ by this chart  we can perfectly infer that $y_t\vec{x}_t \cdot \vec{w}_k \le 0$ 
   \draw let \p1 = (-2,1), \p2 = (5,-1.78), \n1 = {atan2(\y1,\x1)}, \n2 = {atan2(\y2,\x2)} in (2,0) + (\n1:0.8) arc (\n1:\n2:0.8) node[midway, above right] {$\theta$};
 \end{tikzpicture} \\
 \end{center}
-So think in the addition of vector as way to rotate a vector, look if I sum $\vec{w}_k + y_t\vec{x}_t$,
-and I get the next $k + 1$ vector $\vec{w}_{k + 1}$.
+So think in the addition of vector as way to rotate a vector, look if I sum $\vec{w}_k + y_t\vec{x}_t$
+I get the next iteration the $k + 1$ iteration which results on this new vector $\vec{w}_{k + 1}$.
 \begin{center}
 \begin{tikzpicture}[scale=1.5]
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
@@ -368,7 +369,7 @@ and I get the next $k + 1$ vector $\vec{w}_{k + 1}$.
 With this new vector $\vec{w}_{k+1}$ we generate a new angle $\theta$ that makes
 this inequalitie $\vec{w}_{k+1} \cdot y_t\vec{x}_t \le 0$
 false 
-which implies that the perceptron have learned a new pattern, basically we adjust the weights
+which implies that the perceptron have learned the pattern, basically we adjust the weights
  to new direction.
 \[
   \neg (\vec{w}_{k+1} \cdot y_t\vec{x}_t \le 0) \implies \vec{w}_{k+1} \cdot y_t\vec{x}_t > 0\quad |
@@ -377,11 +378,14 @@ which implies that the perceptron have learned a new pattern, basically we adjus
 We are arriving to a conjecture which is that it looks like we need a finite amount of $k$
 iterations to perfectly separate the points or vectors $\vec{x}_t$ in $\mathbb{D}$
 making $\vec{w}_k \rightarrow \vec{\theta}^*$, creating that perfectly
-hyperplane that separates the points,
-then this is important because if that amount of iterations is infinite then the
-algorithm is useless, but if
-it is not then becomes useful,  spoiler, it is finite amounts of iterations for any finite
-set of tuples $(\vec{x}_t, y_t) \in \mathbb{D}$, lets proof that.
+hyperplane that separates the points.
+This is so important because if that amount of iterations is infinite then the
+algorithm is useless because means that we are not going to have any chance to classifie most of
+the possible inputs,
+but if it is a finite amount of iterations means that we are going to have the chance to
+classifie most of the posible inputs
+making this useful,  spoiler, there are finite amounts of iterations for a separable finite
+set of tuples $(\vec{x}_t, y_t) \in \mathbb{D}$, so lets proof that.
 \subsection{Perceptron Convergence Proof:}
 Lets think in that variable $k$ which represents the amount of iterations,
 It should be a finite natural number.
@@ -578,13 +582,19 @@ of steps or times that the perceptron needs for update its weights to converge, 
 \]
 That's it, $k$ is a real number which means that takes at least $\frac{R^2}{\gamma^2}$
 updates or steps to converge.
-\section{Example:}
-This is an example of how we can use the perceptron as a binary classifier, what I'm going to do
-is to create a program which identifies when is a circle and when is a rectangle.
 
+\section{Examples:}
+Now you know why the algorithm works like that, and we solved the conjecture of the finite amount
+of iterations, so lets see how we can use the perceptron as a binary classifier,
+you can find the
+\href{https://github.com/alecksandr26/machine-learning-code/tree/main/examples}{examples here}.
 \subsection{Perceptron module in fortran:}
 Firstly I made a simple perceptron module in fortran which contains the weights, a bias and with a
-simple step activation function.
+simple sign activation function, it has some subroutines implemented for training and testing the
+perceptron and here is the
+\href{https://github.com/alecksandr26/machine-learning-code/blob/main/src/mod_perceptron.f90}{source
+  code}
+
 \begin{lstlisting}
 #include <assertf.h>
 
@@ -595,7 +605,7 @@ module mod_perceptron
     implicit none
 
     private
-    public p_init, p_free, p_train, p_test, perceptron
+    public p_init, p_free, p_train, p_test, perceptron, p_get_weights
 
     ! The type where we are going to contain the weights and bieas
     type perceptron
@@ -612,27 +622,24 @@ contains
         if (output > 0.0) then
             step = 1.0
         else
-            step = 0.0
+            step = - 1.0
         end if
     end function step
-
     
-    ! p_init: Receives a perceptron type and adds to it the weights
-    ! and bias
+    ! p_init: Receives a perceptron type and adds to it the weights and bias
     subroutine p_init(per, w, b)
         real(real32), intent(in) :: w(:), b
         type(perceptron), intent(out) :: per
 
         per%n = size(w)         ! Fetch the size of the array of weights
         
-        ! Allocate the array of weights
+        ! Allocate the array of weights and copy it
         allocate(per%w(per%n))
         per%w(:) = w(:)
         per%b = b
     end subroutine p_init
 
-    ! p_free: To free the perceptrons weights and set the size and bias
-    ! to zero
+    ! p_free: To free the perceptrons weights and set the size and bias to zero
     subroutine p_free(per)
         type(perceptron), intent(in out) :: per
         
@@ -640,48 +647,51 @@ contains
         per%n = 0
         per%b = 0
     end subroutine p_free
-end module mod_perceptron
-\end{lstlisting}
-\subsection{Test and trainning function:}
-Then the \textbf{test} and \textbf{training} functions.
-\begin{lstlisting}
+        
     ! p_train: To train the perceptron with some data
     subroutine p_train(per, inputs, outputs, lrate, nepochs)
-        ! inout Because we are going to modify
-        type(perceptron), intent(in out) :: per 
+        type(perceptron), intent(in out) :: per ! inout Because we are going to modify
         ! The inputs and outputs to be trained
         real(real32), intent(in) :: inputs(:,:) ! Bindimensional array
         real(real32), intent(in) :: outputs(:), lrate ! Learning rate
         integer(int32), intent(in) :: nepochs        ! Num of epochs
+        real(real32), allocatable :: results(:), errors(:), deltas(:)
 
-        ! The size and the iterators
+        ! The size and more arrays to catch the necessary data for the training
         integer(int32) :: n, i, j, k
-        real(real32) :: output, error, delta
-        ! Catch the amount of inputs, sizeof(inputs[1])
-        n = size(inputs, 1)     
         
-        do i = 1, nepochs            ! Start iterating
-            do j = 1, n ! Concurrent iteration
+        n = size(inputs, 1)     ! Catch the amount of inputs, sizeof(inputs[1])
+
+        allocate(results(n))
+        allocate(errors(n))
+        allocate(deltas(n))
+        
+        do concurrent(i = 1 : nepochs)            ! Start iterating
+            do concurrent(j = 1 : n) ! Concurrent iteration
                 ! Computing the perceptron calculation
-                output = per%b
+                results(j) = per%b
                 do concurrent(k = 1 : per%n)
-                    output = output + per%w(k) * inputs(j, k)
+                    results(j) = results(j) + per%w(k) * inputs(j, k)
                 end do
                 
-                ! The step function
-                output = step(output)
+                ! The activation function
+                results(j) = sign_act(results(j))
 
                 ! Compute the error 
-                error = outputs(j) - output
-                delta = lrate * error
+                errors(j) = outputs(j) - results(j)
+                deltas(j) = lrate * errors(j)
 
                 ! Update the perceptron
-                per%b = per%b + delta
+                per%b = per%b + deltas(j)
                 do concurrent(k = 1 : per%n)
-                    per%w(k) = per%w(k) + delta * inputs(j, k)
+                    per%w(k) = per%w(k) + deltas(j) * inputs(j, k)
                 end do
             end do
         end do
+
+        deallocate(results)
+        deallocate(errors)
+        deallocate(deltas)
     end subroutine p_train
 
     ! p_test: To test the perceptron with some inputs
@@ -703,9 +713,194 @@ Then the \textbf{test} and \textbf{training} functions.
             results(i) = step(results(i))
         end do
     end subroutine p_test
-\end{lstlisting}
-\subsection{Main program:}
 
+    ! p_get_weights: To get the weights from the perceptron
+    subroutine p_get_weights(per, weigths)
+        type(perceptron), intent(in) :: per
+        real(real32), intent(out) :: weigths(:)
+        
+        weigths(:) = per%w(:)
+    end subroutine p_get_weights
+end module mod_perceptron
+\end{lstlisting}
+\subsection{Logic gates:}
+So lets see if the perceptron is capable to learn how the logic gates works, so the first
+thing what I have done is to create the training inputs as a simple binary intputs like 1 and 0,
+the intersting thing is in the outpus array where I put the outputs that a normal \textbf{and} logic gate
+must give us.
+\begin{lstlisting}
+  program example
+    use iso_fortran_env, only : real32, int32
+    use mod_perceptron
+    use assertf
+
+    type(perceptron) :: per
+    real(real32) :: inputs(4,2), outputs(4), results(4), weigths(2)
+
+    weigths = [0.8, 0.3]
+    call p_init(per, weigths, - 0.2)      ! Initialize the perceptron
+
+    inputs = reshape([0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0], [4,2])
+    ! inputs = [[0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0]]
+
+    outputs = [- 1.0, - 1.0, - 1.0, 1.0] ! Outputs that should return
+
+\end{lstlisting}
+After initializing the perceptron I called the training function which receives a specific
+amount of epochs which means the amount of times that the perceptron is going to retrain itself,
+and a learning rate of 0.1 which is how aggressive adjust its weights.
+\begin{lstlisting}
+    ! Train the perceptron, with lrate = 0.1, nepochs = 1000
+    call p_train(per, inputs, outputs, 0.1, 1000)
+
+    ! Test the perceptron
+    call p_test(per, inputs, results)
+\end{lstlisting}
+Finally I print everything and it looks like that he perfectly understand the logic gates.
+\begin{lstlisting}
+    ! Print all the data
+    write(*,*) 'x1:', inputs(:, 1)
+    write(*,*) 'x2:', inputs(:, 2)
+    write(*,*) 'outputs:', outputs
+    write(*,*) 'and_w1:', per%w(1)
+    write(*,*) 'and_w2:', per%w(2)
+    write(*,*) 'and_b:', per%b
+    write(*,*) 'and_results:', results
+\end{lstlisting}
+\textbf{Output:}
+\begin{verbatim}
+x1:   0.00000000       1.00000000       0.00000000       1.00000000    
+x2:   0.00000000       0.00000000       1.00000000       1.00000000    
+outputs:  -1.00000000      -1.00000000      -1.00000000       1.00000000    
+and_w1:  0.400000036    
+and_w2:  0.300000012    
+and_b: -0.600000024    
+and_results:  -1.00000000      -1.00000000      -1.00000000       1.00000000
+\end{verbatim}
+
+\newpage
+\subsubsection{Picture of the results with the logic gates:}
+In the complete program I also tried the nand logic gate and the or logic gate, catch its outputs
+data and plot it into some charts, these were the results, as you can see  it perfeclty finds the
+hiperplane to separte the inputs.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 1]{logic_gates.png}
+  \caption{The results of the perceptron with logic gates}
+\end{figure}
+
+\newpage
+\subsection{Classifying images:}
+Now lets try to do something more realistic we want to classify images with circles and rectangles
+each image has a rectangle o a circle, we want to train the perceptron to be able to classifie each
+of ones, so take a look these images, I know that the circles are not perfect but try to think that
+they are circles.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 0.4]{test_circle-2.png}
+  \includegraphics[scale = 0.4]{test_circle-23.png}
+  \caption{Examples of circles}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 0.4]{test_rect-39.png}
+  \includegraphics[scale = 0.4]{test_rect-13.png}
+  \caption{Examples of rectangles}
+\end{figure}
+Each pixel represents an input, the images has a size of \textbf{20 x 20} pixels basically the perceptron
+deals with \textbf{400} inputs then for each of these creates a weight, basically having
+\textbf{400} weights, I know is too much, to train this kind of models is not easy because we
+need to recollect massive datasets, for that reason I program this thing to have the capability to
+generate its own dataset for its training, you can do that by manipulating the
+\href{https://github.com/alecksandr26/machine-learning-code/blob/main/examples/perceptron_rectangle_circle/src/config.h}{config.h}.\\
+
+The main idea of training and creating these kinds of models is to be used for problems where they
+haven't been trained and be able to solve them, but obviously there is always going to be a
+probability where the model gets a wrong answer, for that reason we always want to train this model
+hardly with tons and tons of data.\\
+
+You must  understand the larger our data set is, the less the probability of a wrong answer
+from our model will be, and then after an hour of training the model, I tested with 1 hundred
+random inputs where the neuron hadn't seen before and this was the result.
+\begin{verbatim}
+./main.out
+ [INFO] Loading the brain
+ [INFO] Brain detected
+ [INFO] Brain loaded
+ [INFO] Preparing the training data
+ [INFO] Training data prepared
+ [INFO] Training perceptron
+ [INFO] Perceptron trained
+ [INFO] Preparing the testing data
+ [INFO] Testing data prepared
+ [INFO] Testing perceptron
+ [INFO] Perceptron tested
+ [INFO] test fail data/test_rect-0.ppm
+ [INFO] test fail data/test_rect-3.ppm
+ [INFO] test fail data/test_circle-13.ppm
+ [INFO] test fail data/test_rect-5.ppm
+ [INFO] test fail data/test_circle-18.ppm
+ [INFO] test fail data/test_rect-11.ppm
+ [INFO] test fail data/test_rect-12.ppm
+ [INFO] test fail data/test_circle-22.ppm
+ [INFO] test fail data/test_circle-25.ppm
+ [INFO] test fail data/test_circle-26.ppm
+ [INFO] test fail data/test_rect-16.ppm
+ [INFO] test fail data/test_rect-17.ppm
+ [INFO] test fail data/test_rect-18.ppm
+ [INFO] test fail data/test_rect-19.ppm
+ [INFO] test fail data/test_rect-21.ppm
+ [INFO] test fail data/test_circle-40.ppm
+ [INFO] test fail data/test_rect-25.ppm
+ [INFO] test fail data/test_rect-26.ppm
+ [INFO] test fail data/test_rect-30.ppm
+ [INFO] test fail data/test_circle-52.ppm
+ [INFO] test fail data/test_circle-54.ppm
+ [INFO] test fail data/test_rect-36.ppm
+ [INFO] test fail data/test_rect-39.ppm
+ [INFO] test fail data/test_rect-40.ppm
+   76.0000000              76         100
+ [INFO] Saving new brain
+ [INFO] Brain saved
+\end{verbatim}
+And maybe the model needs more training or maybe it is because the problem is not linear separable,
+we don't know, then I take all its \textbf{400} weights and put them in an image to have a graphical
+representation of It's weights or It's brain.
+\begin{figure}[H]
+  \centering
+  \includegraphics{brain.png}
+  \caption{The brain of the perceptron.}
+\end{figure}
+
+\subsubsection{The linearity of the problems:}
+This is the main problem that makes the perceptron useless for general problems, this is
+because the patters of most of the problems are not lineal, Obviously, it is hard to figure out when
+a problem is linear and when it is not, because we can't imagine a hyperplane of several dimensions,
+for reason it doesn't matter how much you train your model it wouldn't never converges for
+general cases.\\
+But when we mix several perceptrons making them to work together in a big structure of them
+, we can deal with these non linear problemas, because making this structure forces each
+perceptron to focus in an specific pattern of the big picture of the problem abstracting these patterns
+giving us the posibility to classify non linear problems, you can imagine that now we are creating
+several hiperplanes for each piece of the problem.\\
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 0.5]{xor.png}
+  \caption{A neural network dealing with an xor.}
+\end{figure}
+Well, here, as you can see, we need to have three neurons. One is in charge of learning the or
+logic gate pattern and the second one is in charge of learning the nand logic gate, both of
+them learn a patter of the big picture problem creating two hyperplane and abstracting the problem
+to the third neuron which only needs the and logic gate.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 0.5]{neurons.png}
+  \caption{The structure of the nerual netowrk of the xor.}
+\end{figure}
+These structures are called neural networks and yeah, it is interesting when we create massive
+structures of them.
 \section{Conclusion:}
 Perceptrons are limited to linearly separable problems, which means that they can only learn to
 classify data that can be separated by a hyperplane. However, they have been used as building blocks
@@ -713,7 +908,6 @@ for more
 complex neural network architectures that can handle more complex problems.\\
 Overall, perceptrons are a simple and powerful tool for building basic binary classifiers, and
 they have contributed significantly to the development of artificial intelligence and machine learning.
-
 
 \section{References:}
 \begin{itemize}
@@ -728,9 +922,16 @@ they have contributed significantly to the development of artificial intelligenc
 \item Training a Perceptron. (n.d.). \url{https://www.w3schools.com/ai/ai_training.asp}
 \item Desmedt, S. (2019, May 12). The Math behind Neural Networks: Part 1 - The Rosenblatt Perceptron.
   CodeProject.
-  \url{https://www.codeproject.com/Articles/4047091/The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}
+  \href{https://www.codeproject.com/Articles/4047091/The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}{
+    url}
 \item Wikipedia contributors. (2023, March 21). Dot product. Wikipedia.
   \url{https://en.wikipedia.org/wiki/Dot_product}
+\item Kilian Weinberger. (2018, July 9). Lecture 6 “Perceptron Convergence Proof” -Cornell
+  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=kObhWlqIeD8}
+\item Kilian Weinberger. (2018, July 9). Lecture 5 “Perceptron” -Cornell
+  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=wl7gVvI-HuY}
+\item Tsoding Daily. (2022, May 7).
+  First Ancient Neural Network in C [Video]. \url{https://www.youtube.com/watch?v=WEk_grxrCcg}
 \end{itemize}
 
 
