@@ -650,17 +650,18 @@ contains
         
     ! p_train: To train the perceptron with some data
     subroutine p_train(per, inputs, outputs, lrate, nepochs)
-        type(perceptron), intent(in out) :: per ! inout Because we are going to modify
+        ! in out Because we are going to modify
+        type(perceptron), intent(in out) :: per 
         ! The inputs and outputs to be trained
         real(real32), intent(in) :: inputs(:,:) ! Bindimensional array
         real(real32), intent(in) :: outputs(:), lrate ! Learning rate
         integer(int32), intent(in) :: nepochs        ! Num of epochs
         real(real32), allocatable :: results(:), errors(:), deltas(:)
 
-        ! The size and more arrays to catch the necessary data for the training
+        ! The size and more arrays to catch data for the training
         integer(int32) :: n, i, j, k
-        
-        n = size(inputs, 1)     ! Catch the amount of inputs, sizeof(inputs[1])
+        ! Catch the amount of inputs, sizeof(inputs[1])
+        n = size(inputs, 1)     
 
         allocate(results(n))
         allocate(errors(n))
