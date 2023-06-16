@@ -6,8 +6,8 @@ You need to install [assertf](https://github.com/alecksandr26/assert-fortran/blo
 make
 ```
 # Notes
-These are my notes of each AI model, you only need to compile it.
-1. [docs](https://github.com/alecksandr26/fortran-ml/tree/main/docs)
+These are my notes of each AI model, you only need to compile it with pdflatex [docs](https://github.com/alecksandr26/fortran-ml/tree/main/docs).
+
 # Examples
 ## Perceptrons examples
 An example of the linear separability in some logic gates.
