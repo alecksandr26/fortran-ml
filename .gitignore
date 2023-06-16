@@ -1,6 +1,7 @@
-# Examples
-examples/perceptron_rectangle_circle/data/*ppm
-examples/perceptron_logic_gates/*.png
+# Documenation
+examples/*.png
+examples/*.ppm
+docs/*.pdf
 
 # Documentation
 *.aux

@@ -20,8 +20,8 @@ contains
     subroutine test_and_gate(per)
         type(perceptron), intent(inout) :: per
         real(real32) :: inputs(4,2), outputs(4), results(4), weigths(2)
-
-         weigths = [0.2, 0.9]    ! The random assign weights
+        
+        weigths = [0.2, 0.9]    ! The random assign weights
         
         call p_init(per, weigths, - 0.2)      ! Initialize the perceptron
 
