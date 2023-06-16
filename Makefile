@@ -28,9 +28,6 @@ LIB =  $(addprefix $(LIB_DIR)/, libmlc.a)
 
 EXAMPLE_DIRS = $(wildcard $(EXAMPLE_DIR)/*/)
 
-define newline
-
-endef
 
 .PHONY: all clean
 all: $(OBJS) $(TESTS) $(LIB) $(EXAMPLES) $(DOCS)
@@ -109,3 +106,6 @@ ifneq ("$(wildcard $(EXAMPLE_DIR))", "")
 		cd ../../;		\
 	done
 endif
+
+
+docs: $(DOCS)
