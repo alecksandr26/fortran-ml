@@ -1,0 +1,109 @@
+\documentclass[12pt]{book}
+
+\usepackage[margin=0.8in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{float}
+
+\usepackage{fancyhdr}
+
+
+\lstset{language=[90]Fortran,
+  basicstyle=\ttfamily,
+  keywordstyle=\color[HTML]{B22222},
+  commentstyle=\color[HTML]{555555},
+  morecomment=[l]{!\ }% Comment only with space after !
+}
+
+\pgfplotsset{width=10cm,compat=1.9}
+\graphicspath{{./img}}
+
+\usepgfplotslibrary{external}
+\usetikzlibrary{calc}
+
+\let\cleardoublepage=\clearpage
+
+\newcommand\Chapter[2]{
+  \chapter[#1: {\itshape#2}]{#1\\[2ex]\Large\itshape#2}
+}
+
+\newcommand{\changefont}{
+    \fontsize{9}{11}\selectfont
+}
+\fancyhf{}
+
+\fancyhead[L]{\changefont \slshape \leftmark\\}
+\fancyhead[R]{\changefont \slshape \rightmark}
+\fancyfoot[R]{\thepage}
+\pagestyle{fancy}
+
+\title{\textbf{Artificial neurons notes}\\
+  \vspace{1cm} % Adjust the value to increase or decrease the vertical space
+  \includegraphics[scale = 0.7]{cover_page.jpg}
+}
+\author{By \textbf{Erick Alejandro Carrillo López}.}
+\date{2023/04/03}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of contents}
+
+\Chapter{Introduction}{The purpuse of these notes}
+\include{chapters/introduction}
+
+\Chapter{What is an artificial neuron?}{The perceptron and its proof of convergence}
+\include{chapters/neuron}
+
+\Chapter{Predicting with an artificial neuron}{Introduction to linear regression}
+\include{chapters/predicting_with_perceptron}
+
+\Chapter{Gradient Descent}{Optimizing learning algorithms}
+\include{chapters/gradient_descent}
+
+
+\chapter{References}
+\begin{itemize}
+\item Zieba, J., PhD. (2022, December 16). How Do Neurons Work? The Scientist Magazine®.
+  \url{https://www.the-scientist.com/university/brush-up-how-do-neurons-work-70839}
+\item Action potentials and synapses. (2017, November 9). Queensland Brain Institute - University
+  of Queensland.
+  \url{https://qbi.uq.edu.au/brain-basics/brain/brain-physiology/action-potentials-and-synapses}
+\item Perceptrons. (n.d.). \url{https://www.w3schools.com/ai/ai_perceptrons.asp}
+\item Perceptron in Machine Learning - Javatpoint. (n.d.). www.javatpoint.com.
+  \url{https://www.javatpoint.com/perceptron-in-machine-learning}
+\item Training a Perceptron. (n.d.). \url{https://www.w3schools.com/ai/ai_training.asp}
+\item Desmedt, S. (2019, May 12). The Math behind Neural Networks: Part 1 - The Rosenblatt Perceptron.
+  CodeProject.
+  \href{https://www.codeproject.com/Articles/4047091/The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}{
+    url}
+\item Wikipedia contributors. (2023, March 21). Dot product. Wikipedia.
+  \url{https://en.wikipedia.org/wiki/Dot_product}
+\item Kilian Weinberger. (2018, July 9). Lecture 6 “Perceptron Convergence Proof” -Cornell
+  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=kObhWlqIeD8}
+\item Kilian Weinberger. (2018, July 9). Lecture 5 “Perceptron” -Cornell
+  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=wl7gVvI-HuY}
+\item Tsoding Daily. (2022, May 7).
+  First Ancient Neural Network in C [Video]. \url{https://www.youtube.com/watch?v=WEk_grxrCcg}
+\item Wikipedia contributors. (2023, May 8). Linear regression. Wikipedia, The Free Encyclopedia.
+  \url{https://en.wikipedia.org/w/index.php?title=Linear_regression&oldid=1153729683}
+\item Malingan, N. (2023, March 17). Regression Analysis Using Artificial Neural Networks. Scaler Topics.
+  \url{https://www.scaler.com/topics/deep-learning/multiple-linear-regression/}
+\item Wikipedia contributors. (2023b, June 2). Perceptron. Wikipedia, The Free Encyclopedia.
+  \url{https://en.wikipedia.org/w/index.php?title=Perceptron&oldid=1158200766}
+\item Wikipedia contributors. (2023c, June 14). Gradient. Wikipedia, The Free Encyclopedia.
+  \url{https://en.wikipedia.org/w/index.php?title=Gradient&oldid=1160137488}
+\item Kwiatkowski, R. (2021, May 22). Gradient Descent Algorithm — a deep dive. Towards Data Science.
+  \url{https://towardsdatascience.com/gradient-descent-algorithm-a-deep-dive-cf04e8115f21}
+
+\item Wikipedia contributors. (2023b, May 8). Sigmoid function. Wikipedia, The Free Encyclopedia.
+  \url{https://en.wikipedia.org/w/index.php?title=Sigmoid_function&oldid=1153762836}
+\end{itemize}
+\end{document}

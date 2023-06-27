@@ -1,40 +1,6 @@
-\documentclass[12pt]{article}
 
-\usepackage[margin=0.8in]{geometry}
-\usepackage[utf8]{inputenc}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage{pgfplots}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{amssymb}
-\usepackage{float}
-
-\lstset{language=[90]Fortran,
-  basicstyle=\ttfamily,
-  keywordstyle=\color[HTML]{B22222},
-  commentstyle=\color[HTML]{555555},
-  morecomment=[l]{!\ }% Comment only with space after !
-}
-
-\pgfplotsset{width=10cm,compat=1.9}
-\graphicspath{{./img}}
-
-\usepgfplotslibrary{external}
-\usetikzlibrary{calc}
-
-\title{Perceptron}
-\author{Erick Alejandro Carrillo López}
-\date{2023/04/03}
-
-\begin{document}
-\maketitle
-\tableofcontents
-\newpage
-
-\section{How works?:}
-\subsection{A real neuron:}
+\section{What is it?}
+\subsection{A real neuron}
 A real neuron, also known as a nerve cell, is a specialized cell that transmits
 electrical and chemical signals in the nervous system.\\
 At the most basic level, a neuron consists of a cell body, dendrites, and an axon.
@@ -67,7 +33,7 @@ After travelling across the synaptic cleft, the transmitter will attach to neuro
 receptors on the postsynaptic side, and depending on the neurotransmitter released
 (which is dependent on the type of neuron releasing it), particular positive (e.g. Na+, K+, Ca+)
 or negative ions (e.g. Cl-) will travel through channels that span the membrane.
-\subsection{The perceptron:}
+\subsection{The perceptron}
 The perceptron is a type of artificial neural network that is loosely modeled after the structure
 and function of real neurons in the brain. The basic idea behind the perceptron is to use a
 mathematical algorithm to simulate the behavior of a simplified neuron, which can then be used to
@@ -89,7 +55,7 @@ value. This output value is then compared to a threshold value, which determines
 perceptron will output a positive or negative value. If the output is positive, the perceptron
 classifies the input as belonging to one class; if it is negative, the input is classified as
 belonging to the other class.
-\subsection{Perceptron parts:}
+\subsection{Perceptron parts}
 \begin{itemize}
 \item \textbf{Input Nodes or Input Layer:} \\
   This is the primary component of Perceptron which accepts the initial data into the system for
@@ -114,8 +80,8 @@ belonging to the other class.
     \caption{Types of activation functions}
   \end{figure}
 \end{itemize}
-\section{Códing the perceptron:}
-\subsection{The Perceptron Algorithm:}
+\section{Códing the perceptron}
+\subsection{The Perceptron Algorithm}
 Perceptron model works in two important steps as follows.
 \begin{enumerate}
 \item In the first step first, multiply all input values with corresponding weight values and then add
@@ -134,9 +100,10 @@ Perceptron model works in two important steps as follows.
     y = activation(\sum_{i = 0}^{n}(w_i \cdot x_i) + b) = activation(\vec{w} \cdot \vec{x} + b)
   \]
 \end{enumerate}
-At the end what we are doing here is a simple dot product of two vectors.
+At the end what we are doing here is a simple dot product of two vectors, put it in the activation
+function.
 \[
-  \sum_{i = 0}^{n}(w_i \cdot x_i) + b = \vec{w} \cdot \vec{x}
+  \sum_{i = 0}^{n}(w_i \cdot x_i) + b = \vec{w} \cdot \vec{x} 
 \]
 Where.
 \[
@@ -151,7 +118,7 @@ Where.
 \[
   x_0 = 1
 \]
-At the end we can think that this is hiperplane.
+We can think of this as a hyperplane for each component $\forall x$ and the result of the dot product.
 
 \begin{figure}[!hb]
   \centering
@@ -159,16 +126,16 @@ At the end we can think that this is hiperplane.
   \caption{A hyperplane}
 \end{figure}
 
-\subsection{From the perceptron algorithm to code:}
+\subsection{From the perceptron algorithm to code}
 Firstly declare the threshold variable or bias variable,
 this variable will be used as a threshold or bias for the activation function.
 \begin{verbatim}
 const threshold = 1.5
 \end{verbatim}
-After that declare two arrays the weights and inputs, the weights array is always initialized with random
+After that declare two arrays the weights and input, the weights array is always initialized with random
 values.
 \begin{verbatim}
-inputs = [1, 0, 1, 0, 1]
+input = [1, 0, 1, 0, 1]
 weights = [0.7, 0.6, 0.5, 0.3, 0.4]
 \end{verbatim}
 The weighted sum of the input values and weights by initializing a variable called sum to zero,
@@ -176,8 +143,8 @@ and then iterating over the input values and weights and adding the product of e
 and weight to sum.
 \begin{verbatim}
 sum = 0.0
-for (i = 0, i < inputs.length, i++)
-    sum += inputs[i] * weights[i]
+for (i = 0, i < input.length, i++)
+    sum += input[i] * weights[i]
 \end{verbatim}
 And at the end just apply an activation function, a sign function to the weighted sum by checking
 if sum is greater
@@ -189,37 +156,51 @@ activate = (sum > threshold) ? 1 : -1
 Overall, this code represents a simple example of how a perceptron might work by calculating a
 weighted sum of inputs and weights and applying a threshold activation function to produce a
 binary output.
-\subsection{How to train a perceptron? and The perceptron learning algorithm:}
-To train a perceptron, we need to adjust the weights of the input connections so that the
-perceptron produces the desired output for a given set of inputs. We can do this by using an
-iterative algorithm called the perceptron learning algorithm.\\
-The key idea behind the perceptron learning algorithm is that we can use the error between the
-predicted and desired outputs to adjust the weights so that the perceptron becomes better at
-producing the desired output. Specifically, we adjust the weights in proportion to the error, with
-larger errors resulting in larger weight updates.\\
-Note that the perceptron learning algorithm assumes that the problem is linearly separable, which
-means that there is a hyperplane that can separate the positive and negative examples in the input
-space. If the problem is not linearly separable, the perceptron may not be able to converge to a
-solution.\\
+\subsection{The perceptron learning algorithm}
+To train a perceptron, we need to adjust the weights of the input connections so that the perceptron produces
+the desired output for a given set of inputs. This is achieved through an iterative algorithm called the
+perceptron learning algorithm.
+
+The core concept behind the perceptron learning algorithm is to utilize the error and
+desired outputs to modify the weights, thus improving the perceptron's ability to generate the desired output.
+
+It is important to note that the perceptron learning algorithm assumes the problem to be linearly separable,
+meaning that there exists a hyperplane capable of separating the examples in two spaces.
+If the problem is not linearly separable, the perceptron may fail to converge to a solution.
+
+In simpler terms, the perceptron learning process can be summarized in these three steps:
+\begin{enumerate}
+\item The training function makes predictions based on the activation function, which can be represented
+  as $f(\vec{x}_t) = \vec{x}_t \cdot \vec{w}_k$, where $t$ denotes the current iteration through the training
+  data, and $k$ represents the current state of the weights.
+
+\item If the guess is incorrect, the perceptron adjusts the weights. There are different ways to perform this
+  adjustment, but one common approach is to utilize useful information such as the input vector $\vec{x}$,
+  the desired output $y_t$, and a learning rate $\gamma$ (where $\gamma$ is a small value, $\gamma < 1$).
+  The weight adjustment can be expressed as $\vec{w}_{k+1} = \vec{w}_k + \gamma y_t \vec{x}_t$.
+
+\item After many guesses and adjustments, the weights will converge to the desired weights denoted as
+  $\vec{\theta}^*$, which can be represented as
+  $k \rightarrow \infty \quad \implies \quad \vec{w}_k \rightarrow \vec{\theta}^*$.
+\end{enumerate}
+
+By following these steps, the perceptron learns and adapts its weights until it achieves accurate
+classifications.
+
 \begin{figure}[h]
   \centering
   \includegraphics{linearly.png}
   \caption{Linear separability}
 \end{figure}
-\subsubsection{The Mathematical definition behind linear separability:}
+\subsubsection{The Mathematical definition behind linear separability}
 Let $X_0$ and $X_1$ be two sets of points in an n-dimensional Euclidean space. Then $X_0$ and $X_1$
 are linearly separable, if there exist $n + 1$ real numbers $w_1, w_2, \cdots, w_n, k$ such that
 every point $x \in X_0$ satisfies $\sum_{i = 1}^{n}(w_i \cdot x_i) > k$ and every point $x \in X_1$
 satisfies
 $\sum_{i = 0}^{n}(w_i \cdot x_i) < k$ where $x_i$ is the i-th component of $x$.
-\subsection{From the learning algorithm to code:}
-You must create a training function with these characteristics using the previous data.
-\begin{enumerate}
-\item The training function guesses the outcome based on the activate function.
-\item Every time the guess is wrong, the perceptron should adjust the weights.
-\item After many guesses and adjustments, the weights will be correct.
-\end{enumerate}
-Define the activation function which at the end it is a simple binary function.
+\subsection{From the learning algorithm to code}
+You must create a training function with these characteristics using the previous three steps,
+so define the activation function which at the end it is a simple binary function.
 \begin{verbatim}
 int activation(x)
     return (x > 0) ? 1 : -1
@@ -241,15 +222,16 @@ for (i = 0, i < num_epochs, i++)
         sum += b
         out = activation(sum)
 \end{verbatim}
-And at the end we only need to adjust the weights and bias from the error, so the error is so simple
-it is  a subtraction, then use the error and the learning rate to update the weights and bias.
+At the end, the adjustment of weights and bias is performed based on the error at the inputs within a loop.
+The calculation of the error is a straightforward subtraction process. Subsequently, the error is utilized in
+conjunction with the learning rate to update the weights and bias.
 \begin{verbatim}
 error = label[j] - output
 for (k = 0, k < weights.length, k++)
     weights[k] += learning_rate * error * inputs[j][k]
 b += learning_rate * error
 \end{verbatim}
-\subsection{The math behind the learning algorithm:}
+\section{The math behind of the learning algorithm}
 Maybe now the main question is why we adjust the weights like that.
 \begin{verbatim}
 weights[k] += learning_rate * error * inputs[j][k]
@@ -312,7 +294,7 @@ why we adjust the weights like that, think on this chart.
 \begin{tikzpicture}[scale=1.5]
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
   \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
-\end{tikzpicture} \\
+\end{tikzpicture}
 \end{center}
 Again the $\vec{\theta}^*$ is the desired vector configuration which for any
 $(\vec{x}_t, y_t) \in \mathbb{D}$ returns an $y' = y_t$ and the $\vec{w}_k$ is the current k-th iteration
@@ -325,7 +307,7 @@ then We can put the vector $y_t \cdot \vec{x}_t$ in the chart.
   \draw[thick,->] (2,0) -- (0,1) node[anchor=south west]{$\vec{w}_k$};
   \draw[thick,->] (2,0) -- (5,0) node[anchor=south west]{$\vec{\theta}^*$};
   \draw[thick,->] (2,0) -- (5,-1) node[anchor=south west]{$y_t\vec{x}_t$};
-\end{tikzpicture} \\
+\end{tikzpicture}
 \end{center}
 Then if we compute
 the dot product of these two vectors $y_t\vec{x}_t \cdot \vec{\theta}^*$ this inequalitie
@@ -386,11 +368,12 @@ but if it is a finite amount of iterations means that we are going to have the c
 classifie most of the posible inputs
 making this useful,  spoiler, there are finite amounts of iterations for a separable finite
 set of tuples $(\vec{x}_t, y_t) \in \mathbb{D}$, so lets proof that.
-\subsection{Perceptron Convergence Proof:}
+\subsection{Perceptron Convergence Proof}
+\label{sec:perceptron-convergence-proof}
 Lets think in that variable $k$ which represents the amount of iterations,
-It should be a finite natural number.
+It should be a finite real number.
 \[
-  k \in \mathbb{N}
+  k \in \mathbb{R}
 \]
 Then before to continue with the proof we need to do an assumption,
 we are going to scale our $\vec{\theta}^*$ in another words we are going to change it
@@ -583,17 +566,18 @@ of steps or times that the perceptron needs for update its weights to converge, 
 That's it, $k$ is a real number which means that takes at least $\frac{R^2}{\gamma^2}$
 updates or steps to converge.
 
-\section{Examples:}
-Now you know why the algorithm works like that, and we solved the conjecture of the finite amount
-of iterations, so lets see how we can use the perceptron as a binary classifier,
-you can find the
-\href{https://github.com/alecksandr26/machine-learning-code/tree/main/examples}{examples here}.
-\subsection{Perceptron module in fortran:}
-Firstly I made a simple perceptron module in fortran which contains the weights, a bias and with a
-simple sign activation function, it has some subroutines implemented for training and testing the
-perceptron and here is the
-\href{https://github.com/alecksandr26/machine-learning-code/blob/main/src/mod_perceptron.f90}{source
-  code}
+\section{Examples}
+Having understood the working principles of the perceptron algorithm and resolved the conjecture regarding
+the finite number of iterations, let's explore its application as a binary classifier. For practical
+demonstrations and implementation references, you can refer to the collection of examples available
+\href{https://github.com/alecksandr26/fortran-ml/tree/main/examples}{here}.
+
+\label{sec:perceptron-module-fortran}
+\subsection{Perceptron Module in Fortran}
+I have developed a simple perceptron module in Fortran, which includes the weights, bias, and as
+traightforward sign activation function. The module encompasses subroutines for training and testing the
+perceptron. To delve deeper into the implementation details, you can access the source code
+\href{https://github.com/alecksandr26/fortran-ml/tree/main/src/mod_perceptron.f90}{here}.
 
 \begin{lstlisting}
 #include <assertf.h>
@@ -724,7 +708,7 @@ contains
     end subroutine p_get_weights
 end module mod_perceptron
 \end{lstlisting}
-\subsection{Logic gates:}
+\subsection{Logic gates}
 So lets see if the perceptron is capable to learn how the logic gates works, so the first
 thing what I have done is to create the training inputs as a simple binary intputs like 1 and 0,
 the intersting thing is in the outpus array where I put the outputs that a normal \textbf{and} logic gate
@@ -768,7 +752,7 @@ Finally I print everything and it looks like that he perfectly understand the lo
     write(*,*) 'and_b:', per%b
     write(*,*) 'and_results:', results
 \end{lstlisting}
-\textbf{Output:}
+\subsubsection{Output}
 \begin{verbatim}
 x1:   0.00000000       1.00000000       0.00000000       1.00000000    
 x2:   0.00000000       0.00000000       1.00000000       1.00000000    
@@ -780,7 +764,7 @@ and_results:  -1.00000000      -1.00000000      -1.00000000       1.00000000
 \end{verbatim}
 
 \newpage
-\subsubsection{Picture of the results with the logic gates:}
+\subsubsection{Picture of the results with the logic gates}
 In the complete program I also tried the nand logic gate and the or logic gate, catch its outputs
 data and plot it into some charts, these were the results, as you can see  it perfeclty finds the
 hiperplane to separte the inputs.
@@ -791,7 +775,7 @@ hiperplane to separte the inputs.
 \end{figure}
 
 \newpage
-\subsection{Classifying images:}
+\subsection{Classifying images}
 Now lets try to do something more realistic we want to classify images with circles and rectangles
 each image has a rectangle o a circle, we want to train the perceptron to be able to classifie each
 of ones, so take a look these images, I know that the circles are not perfect but try to think that
@@ -875,65 +859,41 @@ representation of It's weights or It's brain.
   \caption{The brain of the perceptron.}
 \end{figure}
 
-\subsubsection{The linearity of the problems:}
-This is the main problem that makes the perceptron useless for general problems, this is
-because the patters of most of the problems are not lineal, Obviously, it is hard to figure out when
-a problem is linear and when it is not, because we can't imagine a hyperplane of several dimensions,
-for reason it doesn't matter how much you train your model it wouldn't never converges for
-general cases.\\
-But when we mix several perceptrons making them to work together in a big structure of them
-, we can deal with these non linear problemas, because making this structure forces each
-perceptron to focus in an specific pattern of the big picture of the problem abstracting these patterns
-giving us the posibility to classify non linear problems, you can imagine that now we are creating
-several hiperplanes for each piece of the problem.\\
+\label{sec:problems-with-the-perceptron}
+\section{The Problems with the Perceptron}
+The main limitation of the perceptron, which sometimes renders it ineffective, is its inability to handle
+non-linear problems. Identifying whether a problem is linear or not can be challenging since we can't easily
+visualize hyperplanes in high-dimensional spaces. Consequently, no matter how extensively we train the
+perceptron model, it will never converge for general cases.
+
+However, by combining multiple perceptrons and organizing them into a larger structure, we can tackle these
+non-linear problems. This arrangement compels each perceptron to focus on a specific pattern within the
+broader problem, abstracting these patterns. It grants us the ability to classify non-linear problems,
+effectively creating multiple hyperplanes for different aspects of the problem.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale = 0.5]{xor.png}
-  \caption{A neural network dealing with an xor.}
+  \caption{A neural network dealing with XOR.}
 \end{figure}
-Well, here, as you can see, we need to have three neurons. One is in charge of learning the or
-logic gate pattern and the second one is in charge of learning the nand logic gate, both of
-them learn a patter of the big picture problem creating two hyperplane and abstracting the problem
-to the third neuron which only needs the and logic gate.
+
+As illustrated above, we require three neurons to solve an XOR problem. One neuron learns the OR logic gate
+pattern, another learns the NAND logic gate pattern, and both create hyperplanes to abstract the problem.
+These abstractions are then fed into the third neuron, which only needs to apply the AND logic gate.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale = 0.5]{neurons.png}
-  \caption{The structure of the nerual netowrk of the xor.}
+  \caption{The structure of the neural network for XOR.}
 \end{figure}
-These structures are called neural networks and yeah, it is interesting when we create massive
-structures of them.
-\section{Conclusion:}
-Perceptrons are limited to linearly separable problems, which means that they can only learn to
-classify data that can be separated by a hyperplane. However, they have been used as building blocks
-for more
-complex neural network architectures that can handle more complex problems.\\
-Overall, perceptrons are a simple and powerful tool for building basic binary classifiers, and
-they have contributed significantly to the development of artificial intelligence and machine learning.
 
-\section{References:}
-\begin{itemize}
-\item Zieba, J., PhD. (2022, December 16). How Do Neurons Work? The Scientist Magazine®.
-  \url{https://www.the-scientist.com/university/brush-up-how-do-neurons-work-70839}
-\item Action potentials and synapses. (2017, November 9). Queensland Brain Institute - University
-  of Queensland.
-  \url{https://qbi.uq.edu.au/brain-basics/brain/brain-physiology/action-potentials-and-synapses}
-\item Perceptrons. (n.d.). \url{https://www.w3schools.com/ai/ai_perceptrons.asp}
-\item Perceptron in Machine Learning - Javatpoint. (n.d.). www.javatpoint.com.
-  \url{https://www.javatpoint.com/perceptron-in-machine-learning}
-\item Training a Perceptron. (n.d.). \url{https://www.w3schools.com/ai/ai_training.asp}
-\item Desmedt, S. (2019, May 12). The Math behind Neural Networks: Part 1 - The Rosenblatt Perceptron.
-  CodeProject.
-  \href{https://www.codeproject.com/Articles/4047091/The-Math-behind-Neural-Networks-Part-1-The-Rosenbl}{
-    url}
-\item Wikipedia contributors. (2023, March 21). Dot product. Wikipedia.
-  \url{https://en.wikipedia.org/wiki/Dot_product}
-\item Kilian Weinberger. (2018, July 9). Lecture 6 “Perceptron Convergence Proof” -Cornell
-  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=kObhWlqIeD8}
-\item Kilian Weinberger. (2018, July 9). Lecture 5 “Perceptron” -Cornell
-  CS4780 SP17 [Video]. YouTube. \url{https://www.youtube.com/watch?v=wl7gVvI-HuY}
-\item Tsoding Daily. (2022, May 7).
-  First Ancient Neural Network in C [Video]. \url{https://www.youtube.com/watch?v=WEk_grxrCcg}
-\end{itemize}
+These structures are known as neural networks, and they become particularly interesting when we create
+extensive arrangements of them.
 
+Perceptrons are limited to linearly separable problems, meaning they can only learn to classify data that
+can be separated by a hyperplane. However, they have served as building blocks for more complex neural
+network architectures capable of handling intricate problems.
 
-\end{document}
+Overall, perceptrons are simple yet powerful tools for constructing basic binary classifiers. Their
+contributions to the development of artificial intelligence and machine learning have been significant.
+

@@ -52,6 +52,7 @@ contains
   ! p_train: To train the perceptron with some data
   subroutine p_train(per, inputs, outputs, lrate, nepochs)
     type(perceptron), intent(in out) :: per ! inout Because we are going to modify
+    
     ! The inputs and outputs to be trained
     real(real32), intent(in) :: inputs(:,:) ! Bindimensional array
     real(real32), intent(in) :: outputs(:), lrate ! Learning rate

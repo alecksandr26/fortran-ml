@@ -17,12 +17,16 @@ TEST_BIN_DIR = $(addprefix $(TEST_DIR)/, bin)
 TEST_SRC_DIR = $(addprefix $(TEST_DIR)/, src)
 DOC_DIR = docs
 
-OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o)
+OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o \
+				mod_linear_regression.o)
+
 BINS = $(addprefix $(BIN_DIR)/, )
-TESTS = $(addprefix $(TEST_BIN_DIR)/, test_mod_perceptron.out)
+TESTS = $(addprefix $(TEST_BIN_DIR)/, 	test_mod_perceptron.out \
+					test_mod_linear_regression.out)
+
 EXAMPLES = $(patsubst $(EXAMPLE_DIR)/%/Makefile, $(EXAMPLE_DIR)/%/main.out, \
 			$(wildcard $(EXAMPLE_DIR)/*/Makefile)) # Fetch The whole directories
-DOCS = $(addprefix $(DOC_DIR)/, perceptron_notes.pdf)
+DOC = $(addprefix $(DOC_DIR)/, main.pdf)
 
 LIB =  $(addprefix $(LIB_DIR)/, libmlc.a)
 
@@ -30,7 +34,7 @@ EXAMPLE_DIRS = $(wildcard $(EXAMPLE_DIR)/*/)
 
 
 .PHONY: all clean
-all: $(OBJS) $(TESTS) $(LIB) $(EXAMPLES) $(DOCS)
+all: $(OBJS) $(TESTS) $(LIB) $(EXAMPLES) $(DOC)
 
 $(OBJ_DIR):
 	mkdir -p $@
@@ -66,7 +70,7 @@ test_%.out: $(TEST_BIN_DIR)/test_%.out
 
 # Compile the documents
 $(DOC_DIR)/%.pdf: $(DOC_DIR)/%.tex
-	$(LATEX) -output-directory $(dir $@) $<
+	cd $(DOC_DIR) && $(LATEX) $(notdir $<)
 
 
 $(EXAMPLE_DIR)/%/main.out: $(EXAMPLE_DIR)/%/Makefile $(LIB)
@@ -107,5 +111,4 @@ ifneq ("$(wildcard $(EXAMPLE_DIR))", "")
 	done
 endif
 
-
-docs: $(DOCS)
+doc: $(DOC)
