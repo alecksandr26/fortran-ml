@@ -18,11 +18,14 @@ TEST_SRC_DIR = $(addprefix $(TEST_DIR)/, src)
 DOC_DIR = docs
 
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o \
-				mod_linear_regression.o)
+				mod_linear_regression.o\
+				mod_neuron.o)
 
 BINS = $(addprefix $(BIN_DIR)/, )
 TESTS = $(addprefix $(TEST_BIN_DIR)/, 	test_mod_perceptron.out \
-					test_mod_linear_regression.out)
+					test_mod_linear_regression.out\
+					test_mod_neuron.out\
+					test_mod_neuron2.out)
 
 EXAMPLES = $(patsubst $(EXAMPLE_DIR)/%/Makefile, $(EXAMPLE_DIR)/%/main.out, \
 			$(wildcard $(EXAMPLE_DIR)/*/Makefile)) # Fetch The whole directories

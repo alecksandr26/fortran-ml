@@ -1,4 +1,6 @@
 # Documenation
+doc/*.pdf
+examples/*.ppm
 examples/*.png
 examples/*.ppm
 docs/*.pdf
