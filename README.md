@@ -7,13 +7,6 @@ make
 ```
 # Notes
 These are my notes of each AI model, you only need to compile it with pdflatex [docs](https://github.com/alecksandr26/fortran-ml/tree/main/docs).
-
-# Examples
-## Perceptrons examples
-An example of the linear separability in some logic gates.
-
-![logic_gates](assets/logic_gates.png)
-
-This is a graphical representation of the perceptrons weights, the perceptron try to classify rectangles and circles.
-
-![brain](assets/brain.png)
+```
+make doc
+```
