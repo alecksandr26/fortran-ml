@@ -297,9 +297,11 @@ u_t = y_t - \vec{x}_t \cdot \vec{w} = y_t - \sum_{i = 1}^{m}x_{t, i} \cdot w_i
 If we take the partial derivative of any $u_t$ with respect to $m_i$, it is referred to as a partial derivative
 because we can think of $u_t$ as a multivariable function $u_t(\vec{w})$.
 \[
-\frac{\partial u_t}{\partial w_i} = x_{t, i}
+\frac{\partial u_t}{\partial w_i} = - x_{t, i}
 \]
-By making this simple substitution, we can calculate the partial derivative of $w_i$ in $MSE(\vec{w})$.
+It is $-x_{t, i}$ because remember that
+$u_t = y_t + (-1) \cdot \vec{x}_t \cdot \vec{w} = y_t - \vec{x}_t \cdot \vec{w}$ and 
+by making this simple substitution, we can calculate the partial derivative of $w_i$ in $MSE(\vec{w})$.
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{1}{n} \cdot (
 \frac{\partial (y_1 - \vec{x}_1 \cdot \vec{w})^2}{\partial w_i} + \cdots +
@@ -315,18 +317,19 @@ By applying the chain rule, we can easily obtain the partial derivatives.
 
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{1}{n} \cdot (
-2 \cdot u_1 \cdot x_{1, i} + \cdots +
-2 \cdot u_n \cdot x_{n, i})
+2 \cdot u_1 \cdot - x_{1, i} + \cdots +
+2 \cdot u_n \cdot - x_{n, i})
 \]
-
+Then we can eliminate the negative sign by obtaining a $-1$ from the expression
+$y_t - \vec{x}_t \cdot \vec{w} = (-1) \cdot (\vec{x}_t \cdot \vec{w} - y_t)$.
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{1}{n} \cdot (
-2 \cdot (y_1 - \vec{x}_1 \cdot \vec{w}) \cdot x_{1, i} + \cdots +
-2 \cdot (y_n - \vec{x}_n \cdot \vec{w}) \cdot x_{n, i})
+2 \cdot (\vec{x}_1 \cdot \vec{w} - y_1) \cdot x_{1, i} + \cdots +
+2 \cdot (\vec{x}_n \cdot \vec{w} - y_n) \cdot x_{n, i})
 \]
 In the end, we arrive at this simple formula, which allows us to update each of the weights.
 \[
-\frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, i}
+\frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, i}
 \]
 And if you know more mathematics you could adapt and modify this expression as your convinient,
 for the moment we can be able to compute our gradient.
@@ -336,39 +339,39 @@ for the moment we can be able to compute our gradient.
   \\ \vdots
   \\ \frac{\partial MSE}{\partial w_m}(w_m)
 \end{bmatrix} =
-\begin{bmatrix} \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, 1}
+\begin{bmatrix} \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, 1}
   \\ \vdots
-  \\ \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, m}
+  \\ \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, m}
 \end{bmatrix} 
 \]
 Using this gradient, we can update our weights by subtracting. As you can see, this new algorithm is not easy
 to understand without a mathematical background. It requires mathematical knowledge to appreciate its efficiency.
 \[
-\vec{w}_{k + 1} = \vec{w}_k + \gamma \cdot \nabla MSE(\vec{w_k})
+\vec{w}_{k + 1} = \vec{w}_k - \gamma \cdot \nabla MSE(\vec{w_k})
 \]
-Notice that I'm using addition instead of subtraction here as previously explained in this
+Notice that I'm not using the addition in this formula, I'm subtracting here as previously explained in this
 \hyperref[sec:diving_into_the_algorithm]{example}.
-The reason for this choice is that the expression $y_t - \vec{x}_t \cdot \vec{w}_k$
+The reason for this choice is that the expression $\vec{x}_t \cdot \vec{w}_k - y_t$
 can be either negative or positive, representing different concepts or conditions.
 \[
-\frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}_k) \cdot x_{t, i} < 0\quad \implies \quad
-\text{Decrement}
+\frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w}_k - y_t) \cdot x_{t, i} < 0\quad \implies \quad
+\text{Increament}
 \]
 
 \[
-\frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}_k) \cdot x_{t, i} > 0 \quad \implies \quad
-\text{Increament}
+\frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w}_k - y_t) \cdot x_{t, i} > 0 \quad \implies \quad
+\text{Decrement}
 \]
-So, by using a negative sign instead of moving towards $\vec{\theta}^*$, we will move in the opposite direction.
-If you prefer to use a negative sign, you can multiply the entire expression of $\nabla MSE(\vec{w})$ by $-1$.
+So, by using a positive sign instead of moving towards $\vec{\theta}^*$, we will move in the opposite direction.
+If you prefer to use a positive sign, you can multiply the entire expression of $\nabla MSE(\vec{w})$ by $-1$.
 \[
 (-1) \cdot \nabla MSE(\vec{w}) = \begin{bmatrix} (-1) \cdot \frac{\partial MSE}{\partial w_1}(w_1)
   \\ \vdots
   \\ (-1) \cdot \frac{\partial MSE}{\partial w_m}(w_m)
 \end{bmatrix} =
-\begin{bmatrix} \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, 1}
+\begin{bmatrix} \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, 1}
   \\ \vdots
-  \\ \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, m}
+  \\ \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, m}
 \end{bmatrix} 
 \]
 
@@ -391,7 +394,7 @@ input values. It exhibits a characteristic "S"-shaped curve and has a non-negati
 It is important to note that the terms "sigmoid function" and "sigmoid curve" refer to the same mathematical
 object. which is defined by the formula:
 \[
-S(x) = \frac{1}{1 + e^{-x}} = \frac{e^x}{e^x + 1} = 1 - S(-x)
+\sigma(x) = \frac{1}{1 + e^{-x}} = \frac{e^x}{e^x + 1} = 1 - S(-x)
 \]
 This expression provides us with the following information.
 \[
@@ -438,7 +441,7 @@ f(x) = c_1 \cdot e^{c_2 \cdot x}
 
 Folling those rules we arrive with this idea of the derivate $u_t$ of $w_i$, lets view.
 \[
-u_t(\vec{w}) = \frac{g(\vec{w})}{h(\vec{w})}
+u_t(\vec{w}) = y_t - \frac{g(\vec{w})}{h(\vec{w})}
 \]
 
 \[
@@ -461,11 +464,11 @@ h(\vec{w}) = 1 + e^{-(\vec{x}_t \cdot \vec{w})} = 1 + e^{-(\sum_{i = 1}^m x_{t, 
 
 \[
 \frac{\partial u_t}{\partial w_i} =
-\frac{- (-x_{t, i} \cdot e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, i} \cdot w_i} \cdots e^{-x_{t, m} \cdot w_m})}
+ - \frac{- (-x_{t, i} \cdot e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, i} \cdot w_i} \cdots e^{-x_{t, m} \cdot w_m})}
      {(1 + e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, m} \cdot w_m})^2}
      \]
      \[
-     = \frac{x_{t, i} \cdot e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, i} \cdot w_i} \cdots e^{-x_{t, m} \cdot w_m}}
+     = - \frac{x_{t, i} \cdot e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, i} \cdot w_i} \cdots e^{-x_{t, m} \cdot w_m}}
      {1 + 2e^{-x_{t, 1} \cdot w_1} \cdots e^{-x_{t, m} \cdot w_m} + e^{-2 \cdot x_{t, 1} \cdot w_1} \cdots e^{-2 \cdot x_{t, m} \cdot w_m}}
 \]
 I understand that these types of derivatives can be challenging to grasp, but by studying
@@ -473,31 +476,34 @@ differential calculus, you will be able to overcome the difficulties and compreh
 
 \[
 \frac{\partial u_t}{\partial w_i} =
-\frac{x_{t, i} \cdot e^{- \vec{x}_t \cdot \vec{w}}}
-     {(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
+- \frac{x_{t, i} \cdot e^{- \vec{x}_t \cdot \vec{w}}}
+       {(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
 \]
 
 Continuing with the chain rule, we can arrive at these expressions.
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{1}{n} \cdot (\frac{\partial u_1^2}{\partial u_1} \cdot
-\frac{u_1}{w_i} + \cdots + \frac{\partial u_n^2}{\partial u_n} \cdot \frac{\partial u_n}{\partial w_i})
+\frac{\partial u_1}{\partial w_i} +
+\cdots + \frac{\partial u_n^2}{\partial u_n} \cdot \frac{\partial u_n}{\partial w_i})
 \]
 
 
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{1}{n} \cdot (2 \cdot u_1 \cdot
-\frac{x_{1, i} \cdot e^{- \vec{x}_1 \cdot \vec{w}}}{(1 + e^{- \vec{x}_1 \cdot \vec{w}})^2}
+- \frac{x_{1, i} \cdot e^{- \vec{x}_1 \cdot \vec{w}}}{(1 + e^{- \vec{x}_1 \cdot \vec{w}})^2}
 + \cdots +
 2 \cdot u_n \cdot
-\frac{x_{n, i} \cdot e^{- \vec{x}_n \cdot \vec{w}}}{(1 + e^{- \vec{x}_n \cdot \vec{w}})^2}
+- \frac{x_{n, i} \cdot e^{- \vec{x}_n \cdot \vec{w}}}{(1 + e^{- \vec{x}_n \cdot \vec{w}})^2}
 \]
+Again we can eliminate the negative sign by obtaining a $-1$ from the expression
+$y_1 - \frac{1}{1 + e^{-(\vec{x}_1 \cdot \vec{w})}} = (-1) \cdot (\frac{1}{1 + e^{-(\vec{x}_1 \cdot \vec{w})}} - y_t)$
 
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot (
-(y_1 - \frac{1}{1 + e^{-(\vec{x}_1 \cdot \vec{w})}}) \cdot
+(\frac{1}{1 + e^{-(\vec{x}_1 \cdot \vec{w})}} - y_1) \cdot
 \frac{x_{1, i} \cdot e^{- \vec{x}_1 \cdot \vec{w}}}{(1 + e^{- \vec{x}_1 \cdot \vec{w}})^2}
 + \cdots +
-(y_n - \frac{1}{1 + e^{-(\vec{x}_n \cdot \vec{w})}}) \cdot
+(\frac{1}{1 + e^{-(\vec{x}_n \cdot \vec{w})}} - y_n) \cdot
 \frac{x_{n, i} \cdot e^{- \vec{x}_n \cdot \vec{w}}}{(1 + e^{- \vec{x}_n \cdot \vec{w}})^2}
 )
 \]
@@ -505,7 +511,7 @@ Continuing with the chain rule, we can arrive at these expressions.
 
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n
-(y_t - \frac{1}{1 + e^{-\vec{x}_t \cdot \vec{w}}}) \cdot
+(\frac{1}{1 + e^{-\vec{x}_t \cdot \vec{w}}} - y_t) \cdot
 \frac{x_{t, i} \cdot e^{- \vec{x}_t \cdot \vec{w}}}{(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
 \]
 
@@ -518,16 +524,16 @@ for neuron classification.
   \\ \frac{\partial MSE}{\partial w_m}(\vec{w})
 \end{bmatrix} =
 \begin{bmatrix} \frac{2}{n} \cdot \sum_{t = 1}^n
-  (y_t - \frac{1}{1 + e^{-(\vec{x}_t \cdot \vec{w})}}) \cdot
+  (\frac{1}{1 + e^{-(\vec{x}_t \cdot \vec{w})}} - y_t) \cdot
   \frac{x_{t, 1} \cdot e^{- \vec{x}_t \cdot \vec{w}}}{(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
   \\ \vdots
-  \\ \frac{2}{n} \cdot \sum_{t = 1}^n  (y_t - \frac{1}{1 + e^{-(\vec{x}_t \cdot \vec{w})}}) \cdot
+  \\ \frac{2}{n} \cdot \sum_{t = 1}^n  (\frac{1}{1 + e^{-(\vec{x}_t \cdot \vec{w})}} - y_t) \cdot
   \frac{x_{t, m} \cdot e^{- \vec{x}_t \cdot \vec{w}}}{(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
 \end{bmatrix}
 \]
 
 \[
-\vec{w}_{k + 1} = \vec{w}_{k} + \gamma \cdot \nabla MSE(\vec{w}_k)
+\vec{w}_{k + 1} = \vec{w}_{k} - \gamma \cdot \nabla MSE(\vec{w}_k)
 \]
 
 \subsubsection{The Origin of the Name "Gradient Descent"}
@@ -564,7 +570,7 @@ for both prediction and classification in the previous section so we are going t
 So the algorithm doesn't change much. Let's begin by coding our $MSE(\vec{w})$ function to measure
 the error of our model.
 \[
-MSE(\vec{w}) = \frac{1}{n} \cdot \sum_{t = 1}^ny_t - \vec{x}_t \cdot \vec{w}
+MSE(\vec{w}) = \frac{1}{n} \cdot \sum_{t = 1}^n (y_t - \vec{x}_t \cdot \vec{w})^2
 \]
 
 The code translation of this would look something like the following.
@@ -582,7 +588,7 @@ With this code written as a function, we now have the ability to measure the per
 As for the learning algnnorithm, as I mentioned earlier, the new algorithm for updating our weights doesn't
 need to change much. You only need to keep in mind this expression.
 \[
-\frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n(y_t - \vec{x}_t \cdot \vec{w}) \cdot x_{t, i}
+\frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n(\vec{x}_t \cdot \vec{w} - y_t) \cdot x_{t, i}
 \]
 First define your number of epochs, and learning rate which is gamma $\gamma$.
 \begin{verbatim}
@@ -597,17 +603,20 @@ for (e = 0, e < nepochs, e++)
     errors[n] = {0.0}
     // First compued the whole errors
     for (t = 0, t < n, t++)
-        res = 0.0
-        for (i = 0, i < input[t].size(), i++)
-            res += inputst[t][i] * weigths[i]
-        errors[t] = outputs[t] - res
+        res = weights[0]  // This is the bias
+        for (i = 1, i < weights.size(), i++)
+            res += inputst[t][i - 1] * weights[i]
+        errors[t] = res - outputs[t]
 
     // After update all the weights
     for (i = 0, i < weights.size(), i++)
         update = 0.0
         for (t = 0, t < n, t++)
-            update += errors[t] * input[t][i]
-        weights[i] += (2 / n) * gamma * update
+            if (i != 0)     // Notice that the bias its input is 1
+                update += errors[t] * input[t][i - 1]
+            else
+                update += errors[t]
+        weights[i] -= (2 / n) * gamma * update
 \end{verbatim}
 
 \subsection{Coding the Optimized Learning Algorithm for the Classification Neuron}
@@ -626,9 +635,9 @@ MSE(\vec{w}) = \frac{1}{n} \cdot \sum_{t = 1}^{n}(y_t - \frac{1}{1 + e^{-(\vec{x
 \begin{verbatim}
 diffs = 0.0
 for (t = 0, t < n, t++)
-    res = 0.0
-    for (i = 0, i < input[t].size(), i++)
-        res += inputst[t][i] * weigths[i]
+    res = weights[0] // add the bias
+    for (i = 1, i < weights.size(), i++)
+        res += inputst[t][i - 1] * weights[i]
     diffs += pow(outputs[t] - activation(res), 2.0) // notice that I call activation
 
 return  diffs / n
@@ -638,7 +647,7 @@ function and incorporate new expressions into it. As a result, the code would lo
 but just try to follow this expression.
 \[
 \frac{\partial MSE}{\partial w_i} = \frac{2}{n} \cdot \sum_{t = 1}^n
-(y_t - \frac{1}{1 + e^{-\vec{x}_t \cdot \vec{w}}}) \cdot
+(\frac{1}{1 + e^{-\vec{x}_t \cdot \vec{w}}} - y_t) \cdot
 \frac{x_{t, i} \cdot e^{- \vec{x}_t \cdot \vec{w}}}{(1 + e^{- \vec{x}_t \cdot \vec{w}})^2}
 \]
 
@@ -652,9 +661,9 @@ for (e = 0, e < nepochs, e++)
     results[n] = {0.0}
     // First compued the whole errors
     for (t = 0, t < n, t++)
-        res = 0.0
-        for (i = 0, i < input[t].size(), i++)
-            res += inputs[t][i] * weigths[i]
+        res = weights[0
+        for (i = 1, i < weights.size(), i++)
+            res += inputs[t][i - 1] * weigths[i]
         results[t] = res
         errors[t] = outputs[t] - activation(res)
 
@@ -662,28 +671,264 @@ for (e = 0, e < nepochs, e++)
     for (i = 0, i < weights.size(), i++)
         update = 0.0
         for (t = 0, t < n, t++)
-            update += errors[t] * pow(activation(results[t]), 2.0)
-                      * inputs[t][i] * exp(- results[t])
-        weights[i] += (2 / n) * gamma * update
+            if (i != 0)  // Again the input of the bias is 1 so the derivate of that is just 1
+                update += errors[t] * pow(activation(results[t]), 2.0)
+                       * inputs[t][i] * exp(- results[t])
+            else
+                update += errors[t] * pow(activation(results[t]), 2.0) * exp(- results[t])
+        weights[i] -= (2 / n) * gamma * update
 \end{verbatim}
 You might be wondering about the feed-forward code, but I believe it is unnecessary to
 show it here since it is practically the same code we have written in the previous chapter.
 \section{Examples}
-I have created a Fortran module that supports both types of neurons. After implementing the module,
-I have organized illustrative examples that you can explore in the following link:
-\href{https://github.com/alecksandr26/fortran-ml/tree/main/examples}{examples}.
-Feel free to check
-them out while you continue reading this section.
+I have developed a Fortran module that encompasses both types of neurons. Upon implementation, I have
+curated a collection of illustrative examples for you to explore at the following link:
+\href{https://github.com/alecksandr26/fortran-ml/tree/main/examples}{examples}. Please feel free to review
+these examples while you continue reading this section. Essentially, I have transferred and adapted the
+examples from the previous chapters to demonstrate their functionality within this module.
 \subsection{Fortran module for both type of neurons}
-As mentioned earlier, I designed the module to support both types of neurons, aiming for a more generalized
-approach. This allows for code reusability across various problem domains. By adopting this design, we can
-leverage the module for a wide range of applications, this is the link for the following code:
-\hyperrf{}{}.
-
+As previously mentioned, the module I have created provides support for both types of neurons, offering a
+more versatile and generalized approach. This design enables code reusability across various problem domains,
+allowing for efficient development. You can access the code for this module at the following link:
+\href{https://github.com/alecksandr26/fortran-ml/blob/main/src/mod_neuron.f90}{mod\_neuron.f90}.
 \begin{lstlisting}
+module mod_neuron
+  use iso_fortran_env, only : int32, real32
+  implicit none
 
+  private
+  public n_init, n_free, n_train, n_test, PREDICT, CLASSIFICATION, mse, neuron
+
+  type NEURON_TYPE
+     integer(int32) :: val
+  end type NEURON_TYPE
+
+
+  type(NEURON_TYPE), parameter :: PREDICT = NEURON_TYPE(1)
+  type(NEURON_TYPE), parameter :: CLASSIFICATION = NEURON_TYPE(2)
+
+  type neuron
+     real(real32), allocatable :: w(:)
+     type(NEURON_TYPE) :: type
+  end type neuron
+contains
+
+  real(real32) function mse(ne, inputs, outputs)
+    type(neuron), intent(in) :: ne
+    real(real32), intent(in) :: inputs(:, :), outputs(:)
+    integer(int32) :: n, t, i, m
+    real(real32), allocatable :: results(:)
+
+    n = size(outputs)
+    m = size(ne%w)
+    allocate(results(n))
+
+    mse = 0.0
+    do concurrent(t = 1 : n)
+       results(t) = ne%w(1)
+       do concurrent(i = 2 : m)
+          results(t) = results(t) + inputs(t, i - 1) * ne%w(i)
+       end do
+
+       select case(ne%type%val)
+       case(CLASSIFICATION%val)
+          results(t) = 1.0 / (1.0 + exp(- results(t)))
+       end select
+       
+       mse = mse + ((outputs(t) - results(t)) ** 2)
+    end do
+    
+    deallocate(results)
+    mse = mse / n
+  end function mse
+
+  subroutine n_init(ne, m, type)
+    integer(int32), intent(in) :: m
+    type(NEURON_TYPE), intent(in) :: type
+    type(neuron), intent(out) :: ne
+    integer(int32) :: i
+
+    ne%type = type
+    ! Add another one for the bias
+    allocate(ne%w(m + 1))
+
+    do concurrent(i = 1 : m + 1)
+       ne%w(i) = 0.0
+    end do
+  end subroutine n_init
+
+  subroutine n_free(ne)
+    type(neuron), intent(in out) :: ne
+    deallocate(ne%w)
+  end subroutine n_free
+
+
+  subroutine n_train(ne, inputs, outputs, lr, nepochs)
+    type(neuron), intent(in out) :: ne
+    real(real32), intent(in) :: inputs(:, :), outputs(:), lr
+    integer(int32), intent(in) :: nepochs
+    integer(int32) :: n, t, e, m, i
+    real(real32), allocatable :: results(:), errors(:), updates(:)
+
+    n = size(outputs)
+    m = size(ne%w)
+    allocate(results(n))
+    allocate(errors(n))
+    allocate(updates(m))
+
+    do e = 1, nepochs
+       ! First compute all the errors
+       do concurrent(t = 1 : n)
+          results(t) = ne%w(1)
+          do concurrent(i = 2 : m)
+             results(t) = results(t) + inputs(t, i - 1) * ne%w(i)
+          end do
+          
+          select case(ne%type%val)
+          case (PREDICT%val)
+             errors(t) = results(t) - outputs(t)
+          case(CLASSIFICATION%val)
+             errors(t) = 1.0 / (1.0 + exp(- results(t))) - outputs(t)
+          end select
+       end do
+
+       ! Update the weights
+       do concurrent(i = 1 : m)
+          updates(i) = 0.0
+          do concurrent(t = 1 : n)
+             select case(ne%type%val)
+             case(PREDICT%val)
+                if (i == 1) then
+                   updates(i) = updates(i) + errors(t)
+                else
+                   updates(i) = updates(i) + errors(t) * inputs(t, i - 1) 
+                end if
+
+             case(CLASSIFICATION%val)
+                if (i == 1) then
+                   updates(i) = updates(i) + errors(t) * exp(- results(t)) / (1.0 + exp( - results(t)))
+                else
+                   updates(i) = updates(i) + errors(t) * &
+                        (inputs(t, i - 1) * exp(- results(t))) / (1.0 + exp( - results(t)))
+                end if
+             end select
+          end do
+          ne%w(i) = ne%w(i) - lr * (2 * updates(i)) / n
+       end do
+    end do
+ 
+    deallocate(results)
+    deallocate(errors)
+    deallocate(updates)
+  end subroutine n_train
+
+
+  subroutine n_test(ne, input, output)
+    type(neuron), intent(in) :: ne
+    real(real32), intent(in) :: input(:)
+    real(real32), intent(out) :: output
+    integer(int32) :: i, m
+
+    m = size(ne%w)
+    output = ne%w(1)
+    do concurrent(i = 2 : m)
+       output = output + ne%w(i) * input(i - 1)
+    end do
+
+    select case(ne%type%val)
+    case(CLASSIFICATION%val)
+       output = 1.0 / (1.0 + exp(- output))
+    end select
+  end subroutine n_test
+end module mod_neuron
 \end{lstlisting}
+\subsection{Classifying Images}
+n the second chapter, I developed a basic perceptron to classify images of circles and squares. Although
+the initial results were not optimal, there were distinguishable differences between the circles and squares.
+However, by incorporating the gradient descent algorithm and utilizing the sigmoid function, we were able to
+achieve comparable results with fewer training iterations. Moreover, by increasing the number of neurons, we
+can further improve the performance of the model for this type of problem. It is important to note that the
+limited success in achieving notable results could be attributed to the fact that constructing a separable
+line between the two classes is relatively easier, and thus, the model does not require significant
+computational power to achieve satisfactory outcomes.
+\begin{verbatim}
+./main.out
+ [INFO] Loading the brain
+ [INFO] Brain detected
+ [INFO] Brain loaded
+ [INFO] Preparing the training data
+ [INFO] Training data prepared
+ [INFO] Training neuron
+ [INFO] Perceptron trained
+ [INFO] Preparing the testing data
+ [INFO] Testing data prepared
+ [INFO] Testing neuron
+ [INFO] Perceptron tested
+ [INFO] test fail data/test_rect-0.ppm          0.495123386       1.00000000    
+ [INFO] test fail data/test_rect-4.ppm          0.202401370       1.00000000    
+ [INFO] test fail data/test_circle-4.ppm        0.523246825       0.00000000    
+ [INFO] test fail data/test_circle-5.ppm        0.619392991       0.00000000    
+ [INFO] test fail data/test_circle-7.ppm        0.664403081       0.00000000    
+ [INFO] test fail data/test_circle-8.ppm        0.593572021       0.00000000    
+ [INFO] test fail data/test_circle-10.ppm       0.925057769       0.00000000    
+ [INFO] test fail data/test_circle-11.ppm       0.503792644       0.00000000    
+ [INFO] test fail data/test_circle-16.ppm       0.836156249       0.00000000    
+ [INFO] test fail data/test_circle-18.ppm       0.703063071       0.00000000    
+ [INFO] test fail data/test_rect-19.ppm         0.445578218       1.00000000    
+ [INFO] test fail data/test_rect-20.ppm         0.314879715       1.00000000    
+ [INFO] test fail data/test_rect-22.ppm         0.456782997       1.00000000    
+ [INFO] test fail data/test_circle-24.ppm       0.737951398       0.00000000    
+ [INFO] test fail data/test_rect-23.ppm          4.00939360E-02   1.00000000    
+ [INFO] test fail data/test_circle-25.ppm       0.681390107       0.00000000    
+ [INFO] test fail data/test_circle-26.ppm       0.942561209       0.00000000    
+ [INFO] test fail data/test_circle-27.ppm       0.533817589       0.00000000    
+ [INFO] test fail data/test_rect-30.ppm         0.382475048       1.00000000    
+ [INFO] test fail data/test_rect-32.ppm         0.345956326       1.00000000    
+ [INFO] test fail data/test_rect-34.ppm         0.138372093       1.00000000    
+ [INFO] test fail data/test_rect-39.ppm         0.243450806       1.00000000    
+ [INFO] test fail data/test_rect-40.ppm         0.179278716       1.00000000    
+ [INFO] test fail data/test_circle-33.ppm       0.906240821       0.00000000    
+ [INFO] test fail data/test_circle-34.ppm       0.704520702       0.00000000    
+ [INFO] test fail data/test_rect-43.ppm         0.315111876       1.00000000    
+ [INFO] test fail data/test_circle-38.ppm       0.584450960       0.00000000    
+ [INFO] test fail data/test_rect-45.ppm         0.110068008       1.00000000    
+ [INFO] test fail data/test_circle-42.ppm       0.906240821       0.00000000    
+ [INFO] test fail data/test_rect-49.ppm         0.182584092       1.00000000    
+ [INFO] test fail data/test_circle-46.ppm       0.691018522       0.00000000    
+ [INFO] test fail data/test_rect-51.ppm         0.418560624       1.00000000    
+   68.0000000              68         100
+ mse:   0.230390772    
+ [INFO] Saving new brain
+ [INFO] Brain saved
+\end{verbatim}
+\newpage
+\subsection{Stock price prediction}
+In the third chapter, I applied the fundamental concept of the perceptron algorithm for prediction tasks.
+This is where the power of gradient descent becomes evident. As mentioned in the previous subsection, achieving
+linear separability is generally easier than linear regression. Leveraging the gradient descent algorithm, we
+can find optimal weights with fewer training iterations, resulting in improved predictive performance.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale = 0.5]{stock_prediction_gradient.png}
+  \includegraphics[scale = 0.5]{stock_prediction.png}
+  \caption{Stock prediction with gradient descent}
+\end{figure}
+When comparing the two images, the one on the left illustrates the results achieved using the gradient
+descent algorithm, while the one on the right displays the previous results. It is clearly evident that
+the image on the left showcases significantly higher precision. With the application of the gradient descent
+algorithm and less training, we are able to effectively cover a larger number of blue dots, indicating a
+notable improvement in performance.
 
+\section{Important things to mention}
+To ensure convergence of your model, I recommend using a small learning rate. This approach facilitates
+deeper and more refined results. However, it's important to note that employing a small learning rate may
+necessitate additional epochs or longer training time to achieve satisfactory outcomes. This is due to the
+fact that smaller adjustments to the weights are made, emphasizing precision and control. Ultimately, the
+primary objective of the gradient descent algorithm is to provide a more controlled approach for achieving
+optimal weight adjustments.
 
+In the next chapter, we will explore the concepts underlying neural networks. You will discover how we can
+achieve even greater precision in our results by working with multiple neurons. Stay tuned to see the
+advancements in accuracy and performance that come with this approach.
 

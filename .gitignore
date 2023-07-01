@@ -1,6 +1,7 @@
 # Documenation
 doc/*.pdf
 examples/*.ppm
+examples/*/data/*.ppm
 examples/*.png
 examples/*.ppm
 docs/*.pdf

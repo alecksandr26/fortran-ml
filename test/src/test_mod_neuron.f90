@@ -6,9 +6,9 @@ program test_mod_neuron
 
   type(neuron) :: ne
   ! logic gate and
-  real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
+  ! real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
   ! [[0, 0], [1, 0], [0, 1], [1, 1]]
-  real(real32) :: outputs(4) = [0.0, 0.0, 0.0, 1.0], output
+  ! real(real32) :: outputs(4) = [0.0, 0.0, 0.0, 1.0], output
 
   ! logic gate or
   ! real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
@@ -16,18 +16,18 @@ program test_mod_neuron
   ! real(real32) :: outputs(4) = [0.0, 1.0, 1.0, 1.0], output
 
   ! logic gate nand
+  real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
+  ! [[0, 0], [1, 0], [0, 1], [1, 1]]
+  real(real32) :: outputs(4) = [1.0, 1.0, 1.0, 0.0], output
+
+  ! logic gate xor, need more neurons
   ! real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
   ! [[0, 0], [1, 0], [0, 1], [1, 1]]
-  ! real(real32) :: outputs(4) = [1.0, 1.0, 1.0, 0.0], output
-
-  ! ! logic gate xor, need more neurons
-  ! real(real32) :: inputs(4, 2) = reshape([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0], [4, 2])
-  ! ! [[0, 0], [1, 0], [0, 1], [1, 1]]
   ! real(real32) :: outputs(4) = [0.0, 1.0, 1.0, 0.0], output
   
   call n_init(ne, 2, CLASSIFICATION)
 
-  call n_train(ne, inputs, outputs, 0.1, 100000)
+  call n_train(ne, inputs, outputs, 0.1, 1000000)
 
   write(*, '(A, F8.6)') "MSE: ", mse(ne, inputs, outputs)
 

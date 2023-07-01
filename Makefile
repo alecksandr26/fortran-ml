@@ -15,7 +15,7 @@ LIB_DIR = lib
 TEST_DIR = test
 TEST_BIN_DIR = $(addprefix $(TEST_DIR)/, bin)
 TEST_SRC_DIR = $(addprefix $(TEST_DIR)/, src)
-DOC_DIR = docs
+DOC_DIR = doc
 
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o \
 				mod_linear_regression.o\

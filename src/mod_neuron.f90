@@ -92,9 +92,9 @@ contains
           
           select case(ne%type%val)
           case (PREDICT%val)
-             errors(t) = outputs(t) - results(t)
+             errors(t) = results(t) - outputs(t)
           case(CLASSIFICATION%val)
-             errors(t) = outputs(t) - 1.0 / (1.0 + exp(- results(t)))
+             errors(t) = 1.0 / (1.0 + exp(- results(t))) - outputs(t)
           end select
        end do
 
@@ -119,7 +119,7 @@ contains
                 end if
              end select
           end do
-          ne%w(i) = ne%w(i) + lr * (2 * updates(i)) / n
+          ne%w(i) = ne%w(i) - lr * (2 * updates(i)) / n
        end do
     end do
  
