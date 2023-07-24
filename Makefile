@@ -6,6 +6,7 @@ MAKE = make
 
 F_FLAGS = -ggdb -pedantic -Wall -cpp -fopenmp
 ASSERT_FLAGS = -I /usr/include -lassertf
+BLAS_FLAGS = -llapack -lblas
 
 SRC_DIR = src
 EXAMPLE_DIR = examples
@@ -19,13 +20,15 @@ DOC_DIR = doc
 
 OBJS = $(addprefix $(OBJ_DIR)/, mod_perceptron.o \
 				mod_linear_regression.o\
-				mod_neuron.o)
+				mod_neuron.o\
+				mod_layer.o)
 
 BINS = $(addprefix $(BIN_DIR)/, )
 TESTS = $(addprefix $(TEST_BIN_DIR)/, 	test_mod_perceptron.out \
 					test_mod_linear_regression.out\
 					test_mod_neuron.out\
-					test_mod_neuron2.out)
+					test_mod_neuron2.out\
+					test_mod_layer.out)
 
 EXAMPLES = $(patsubst $(EXAMPLE_DIR)/%/Makefile, $(EXAMPLE_DIR)/%/main.out, \
 			$(wildcard $(EXAMPLE_DIR)/*/Makefile)) # Fetch The whole directories
@@ -53,7 +56,7 @@ $(LIB_DIR):
 
 # The objects 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.f90 | $(OBJ_DIR)
-	$(F) $(F_FLAGS) -c $< -J$(OBJ_DIR)/ -o $@ $(ASSERT_FLAGS)
+	$(F) $(F_FLAGS) -c $< -J$(OBJ_DIR)/ -o $@ $(ASSERT_FLAGS) $(BLAS_FLAGS)
 
 # Create the lib with all the objects
 $(LIB): $(OBJS) | $(LIB_DIR)
@@ -62,11 +65,11 @@ $(LIB): $(OBJS) | $(LIB_DIR)
 # Compiling for the module of assert
 $(TEST_BIN_DIR)/test_%.out: $(TEST_SRC_DIR)/test_%.f90 $(LIB) | $(TEST_BIN_DIR)
 	cp $(OBJ_DIR)/*.mod $(dir $<)
-	$(F) $(F_FLAGS) $^ -o $@ $(ASSERT_FLAGS)
+	$(F) $(F_FLAGS) $^ -o $@ $(ASSERT_FLAGS) $(ASSERT_FLAGS) $(BLAS_FLAGS)
 
 # The binary execution
 $(BIN_DIR)/%.out: $(SRC_DIR)/%.f90 $(LIB) | $(BIN_DIR)
-	$(F) $(F_FLAGS) $< $(LIB) -o $@
+	$(F) $(F_FLAGS) $< $(LIB) -o $@ $(ASSERT_FLAGS) $(BLAS_FLAGS)
 
 test_%.out: $(TEST_BIN_DIR)/test_%.out
 	valgrind --leak-check=full --show-leak-kinds=all ./$<
@@ -74,7 +77,6 @@ test_%.out: $(TEST_BIN_DIR)/test_%.out
 # Compile the documents
 $(DOC_DIR)/%.pdf: $(DOC_DIR)/%.tex
 	cd $(DOC_DIR) && $(LATEX) $(notdir $<)
-
 
 $(EXAMPLE_DIR)/%/main.out: $(EXAMPLE_DIR)/%/Makefile $(LIB)
 	cp $(wildcard $(OBJ_DIR)/*.mod) $(dir $<)
